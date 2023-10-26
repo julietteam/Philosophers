@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:26:11 by juandrie          #+#    #+#             */
-/*   Updated: 2023/10/25 18:42:08 by juandrie         ###   ########.fr       */
+/*   Updated: 2023/10/26 16:57:10 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,13 @@
 int main(int ac, char **av)
 {
     t_simulation simulation;
-    
     if (ac < 5 || ac > 6)
     {
         printf("Usage: %s number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]\n", av[0]);
         return (1);
     }
     // Initialisez la simulation
+    // memset(&simulation, 0, sizeof(t_simulation));
     simulation.params.number_of_philosophers = atoi(av[1]); // attention changer en ft_atoi
     simulation.params.time_to_die = atoi(av[2]);
     simulation.params.time_to_eat = atoi(av[3]);
@@ -36,10 +36,11 @@ int main(int ac, char **av)
     {
         simulation.params.is_times_to_eat_specified = false;
     }
+    init_simulation(&simulation, simulation.params.number_of_philosophers);
     // Lancez les threads pour chaque philosophe
     start_philosopher_threads(&simulation);
 
-    // Ici, vous pourriez ajouter du code pour nettoyer la mémoire allouée, etc.
 
-    return 0;
+    free_simulation(&simulation);
+    return (0);
 }
