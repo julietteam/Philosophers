@@ -6,11 +6,12 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:26:11 by juandrie          #+#    #+#             */
-/*   Updated: 2023/10/26 16:57:10 by juandrie         ###   ########.fr       */
+/*   Updated: 2023/11/02 18:00:36 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
 
 int main(int ac, char **av)
 {

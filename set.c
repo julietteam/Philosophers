@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:34:09 by juandrie          #+#    #+#             */
-/*   Updated: 2023/10/26 16:57:34 by juandrie         ###   ########.fr       */
+/*   Updated: 2023/11/02 18:02:16 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@ void initialize_simulation_data(t_simulation *simulation, int number_of_philosop
     int i;
 
     i = 0;
+    pthread_mutex_init(&simulation->scheduler_mutex, NULL);
+    pthread_barrier_init(&simulation->start_barrier, NULL, number_of_philosophers);
+
     while (i < number_of_philosophers) 
     {
         simulation->philosophers[i].id = i + 1;
@@ -48,6 +51,7 @@ void initialize_simulation_data(t_simulation *simulation, int number_of_philosop
         simulation->philosophers[i].right_fork = &simulation->forks[(i + 1) % number_of_philosophers];
         i++;
     }
+
 }
 
 t_simulation* init_simulation(t_simulation *simulation, int number_of_philosophers)
@@ -79,4 +83,7 @@ void free_simulation(t_simulation *simulation)
         if (simulation->philosophers)
             free(simulation->philosophers);
     }
+    pthread_mutex_destroy(&simulation->scheduler_mutex);
+    pthread_barrier_destroy(&simulation->start_barrier);
+
 }

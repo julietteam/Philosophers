@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:27:45 by juandrie          #+#    #+#             */
-/*   Updated: 2023/10/26 17:56:35 by juandrie         ###   ########.fr       */
+/*   Updated: 2023/11/02 18:11:48 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,16 @@ typedef struct  s_params
 typedef struct s_philosopher
 {
     int id;
-    int is_dead;
-    long last_meal_time;
+    int is_dead; // etat de vie du Philosophe : 1 si mort, 0 si vivant
+    long long last_meal_time;
     int meals_eaten;
     t_fork *left_fork;
     t_fork *right_fork;
     pthread_t thread;
+    pthread_t monitor_thread; // pour surveiller chaque philosophes 
     t_params params;
-    struct s_simulation *simulation;  // Ajouter cette ligne
+    struct s_simulation *simulation;
+    pthread_mutex_t mutex;
 }               t_philosopher;
 
 typedef struct s_simulation
@@ -59,7 +61,9 @@ typedef struct s_simulation
     t_fork *forks;
     pthread_mutex_t scheduler_mutex; // Mutex pour l'ordonnanceur
     int current_philosopher_id;  
+    pthread_barrier_t start_barrier;
 }               t_simulation;
+
 
 t_simulation* init_simulation(t_simulation *simulation, int number_of_philosophers);
 void free_simulation(t_simulation *simulation);
