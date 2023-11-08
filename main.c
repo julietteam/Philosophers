@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:26:11 by juandrie          #+#    #+#             */
-/*   Updated: 2023/11/07 19:34:35 by juandrie         ###   ########.fr       */
+/*   Updated: 2023/11/08 17:57:41 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,20 +24,28 @@ int main(int ac, char **av)
         printf("Usage: %s number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]\n", av[0]);
         return (1);
     }
-    memset(&simulation, 0, sizeof(t_simulation));
-    simulation.params.number_of_philosophers = atoi(av[1]); // attention changer en ft_atoi
-    simulation.params.time_to_die = atoi(av[2]);
-    simulation.params.time_to_eat = atoi(av[3]);
-    simulation.params.time_to_sleep = atoi(av[4]);
-    if (ac > 6)
+    simulation.params = malloc(sizeof(*(simulation.params)));
+    if (simulation.params == NULL) 
     {
-        simulation.params.number_of_times_each_philosopher_must_eat = atoi(av[5]);
+        printf("Memory allocation failed for simulation parameters.\n");
+        return EXIT_FAILURE;
     }
-    init_simulation(&simulation, simulation.params.number_of_philosophers);
+    memset(simulation.params, 0, sizeof(*(simulation.params)));
+    simulation.params->number_of_philosophers = atoi(av[1]); 
+    simulation.params->time_to_die = atoi(av[2]);
+    simulation.params->time_to_eat = atoi(av[3]);
+    simulation.params->time_to_sleep = atoi(av[4]);
+    if (ac == 6)
+    {
+        simulation.params->number_of_times_each_philosopher_must_eat = atoi(av[5]);
+    }
+    simulation.start_time = current_timestamp_in_ms(); 
+    init_simulation(&simulation, simulation.params->number_of_philosophers);
    
     start_philosopher_threads(&simulation);
 
     free_simulation(&simulation);
+    free(simulation.params);
     pthread_mutex_destroy(&log_mutex);
     return (0);
 }
