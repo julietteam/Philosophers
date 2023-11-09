@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:17:50 by juandrie          #+#    #+#             */
-/*   Updated: 2023/11/08 19:06:41 by juandrie         ###   ########.fr       */
+/*   Updated: 2023/11/09 15:57:12 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,7 @@ void think_and_sleep(t_philosopher *philosopher)
 
 void update_scheduler(t_philosopher *philosopher) 
 {
-    philosopher->simulation->full_philosophers = 0;
-     
+
     pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
         
     if (philosopher->meals_eaten >= philosopher->params.number_of_times_each_philosopher_must_eat)
@@ -72,8 +71,9 @@ void update_scheduler(t_philosopher *philosopher)
 void *philosopher_routine(void *arg) 
 {
     t_philosopher *philosopher = (t_philosopher *)arg;
+    
     philosopher->is_dead = 0; 
-    philosopher->simulation->is_running = 1;
+    // philosopher->simulation->is_running = 1;
     philosopher->full = 0;
     philosopher->meals_eaten = 0;
     philosopher->last_meal_time = current_timestamp_in_ms();
@@ -93,57 +93,19 @@ void *philosopher_routine(void *arg)
 
     while (!philosopher->is_dead && philosopher->simulation->is_running)
     {
-        // if (!philosopher->simulation->is_running)
-        //     break;
-        // if (philosopher->full != 1)
-        //     eat(philosopher);  
         take_forks(philosopher, first_fork, second_fork);
-        if (!philosopher->simulation->is_running)
-            break;
-        if (philosopher->full != 1)
+        if (philosopher->full != 1 && philosopher->simulation->is_running)
+        {
             eat(philosopher);
-        if (philosopher->full == 1 || !philosopher->simulation->is_running)
-            break; 
-        if (!philosopher->simulation->is_running)
-            break; 
-        put_forks(first_fork, second_fork);
-        if (!philosopher->simulation->is_running)
+            update_scheduler(philosopher);
+        }
+        put_forks(first_fork, second_fork); 
+        if (philosopher->full == 1 || !philosopher->simulation->is_running) 
             break;
         think_and_sleep(philosopher);
-        if (!philosopher->simulation->is_running)
-            break;
-        update_scheduler(philosopher);
-        if (!philosopher->simulation->is_running)
-            break; //
     }
     return (NULL);
 }
-
-
-void *monitor_philosopher(void *arg) 
-{
-    t_philosopher *philosopher = (t_philosopher *)arg;
-    philosopher->last_meal_time = current_timestamp_in_ms();
-    philosopher->is_dead = 0; // Ensure this philosopher is marked as alive to start
-    philosopher->simulation->is_running = 1;
-    
-    while (philosopher->simulation->is_running) 
-    {
-        usleep(5000); 
-        pthread_mutex_lock(&philosopher->eating_mutex);
-        if (current_timestamp_in_ms() - philosopher->last_meal_time > philosopher->params.time_to_die) 
-        {
-            philosopher->is_dead = 1;
-            display_log(philosopher->simulation, philosopher->id, "died");
-            philosopher->simulation->is_running = 0;
-            pthread_mutex_unlock(&philosopher->eating_mutex);
-            break; 
-        }
-        pthread_mutex_unlock(&philosopher->eating_mutex);
-    }
-    return (NULL);
-}
-
 
 void exit_cleanly(t_simulation *simulation, int philosopher_count)
 {
@@ -176,8 +138,39 @@ void exit_cleanly(t_simulation *simulation, int philosopher_count)
         simulation->philosophers = NULL;
     }
     printf("Sortie propre réalisée.\n");
-    exit (EXIT_FAILURE);
+    exit (1);
 }
+void *monitor_philosopher(void *arg) 
+{
+    t_philosopher *philosopher = (t_philosopher *)arg;
+    long long time_since_last_meal = current_timestamp_in_ms() - philosopher->last_meal_time;
+    bool timed_out = time_since_last_meal > philosopher->params.time_to_die;
+    // philosopher->last_meal_time = current_timestamp_in_ms();
+    // philosopher->is_dead = 0; 
+    // philosopher->simulation->is_running = 1;
+    // philosopher->simulation->full_philosophers = 0;
+    
+    while (philosopher->simulation->is_running)
+    {
+        usleep(5000); 
+        pthread_mutex_lock(&philosopher->eating_mutex);
+        if (timed_out) 
+        {
+            philosopher->is_dead = 1;
+            display_log(philosopher->simulation, philosopher->id, "died");
+            philosopher->simulation->is_running = 0;
+            pthread_mutex_unlock(&philosopher->eating_mutex);
+            break;
+        }
+        pthread_mutex_unlock(&philosopher->eating_mutex);
+        if (!philosopher->simulation->is_running)
+            break;
+    }
+    // if (philosopher->is_dead)
+    //     exit_cleanly(philosopher->simulation, philosopher->simulation->params->number_of_philosophers);
+    return (NULL);
+}
+
 
 void start_philosopher_threads(t_simulation *simulation)
 {
@@ -211,4 +204,5 @@ void start_philosopher_threads(t_simulation *simulation)
             pthread_join(simulation->philosophers[i].monitor_thread, NULL);
         i++;
     }
+    // exit_cleanly(simulation, philosopher_count);
 }

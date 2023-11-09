@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:34:09 by juandrie          #+#    #+#             */
-/*   Updated: 2023/11/08 16:09:45 by juandrie         ###   ########.fr       */
+/*   Updated: 2023/11/09 14:49:41 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ void initialize_simulation_data(t_simulation *simulation, int number_of_philosop
             exit(EXIT_FAILURE);
         i++;
     }
+    simulation->full_philosophers = 0;
+    simulation->is_running = 1;
     printf("Données initialisées pour tous les philosophes.\n");
 }
 
