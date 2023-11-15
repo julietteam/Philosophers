@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:34:09 by juandrie          #+#    #+#             */
-/*   Updated: 2023/11/09 14:49:41 by juandrie         ###   ########.fr       */
+/*   Updated: 2023/11/15 15:37:52 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ int allocate_simulation_resources(t_simulation *simulation, int number_of_philos
     if (!simulation->philosophers)
     {
         printf("Échec de l'allocation pour les philosophes.\n");
-        free(simulation->philosophers);
-        simulation->philosophers = NULL;
+        // free(simulation->philosophers);
+        // simulation->philosophers = NULL;
         return (0);
     }
     simulation->forks = malloc(sizeof(t_fork) * number_of_philosophers);
@@ -53,27 +53,33 @@ void initialize_simulation_data(t_simulation *simulation, int number_of_philosop
         printf("Initialisation du philosophe %d.\n", i + 1);
         simulation->philosophers[i].last_meal_time = current_timestamp_in_ms();
         simulation->philosophers[i].meals_eaten = 0;
-        simulation->philosophers[i].is_dead = 0; // Assuming 'is_dead' is declared in 't_philosopher'
-        simulation->philosophers[i].params = *(simulation->params); // Assuming you want to copy the parameters to each philosopher
+        simulation->philosophers[i].is_dead = 0; 
+        simulation->philosophers[i].params = *(simulation->params); 
         simulation->philosophers[i].simulation = simulation;
         simulation->philosophers[i].full = 0;
         simulation->philosophers[i].left_fork = &simulation->forks[i];
         simulation->philosophers[i].right_fork = &simulation->forks[(i + 1)% number_of_philosophers];
+        simulation->philosophers[i].monitor_launched = false; 
+        simulation->philosophers[i].thread_launched = false;
         if (pthread_mutex_init(&simulation->philosophers[i].mutex, NULL) != 0)
             exit(EXIT_FAILURE);
-        if (pthread_mutex_init(&simulation->forks[i].mutex, NULL) != 0) 
+        if (pthread_mutex_init(&simulation->forks[i].mutex, NULL) != 0 || 
+            pthread_mutex_init(&simulation->forks[i].mutex, NULL) != 0 ||
+            pthread_mutex_init(&simulation->philosophers[i].eating_mutex, NULL) != 0) 
         {
             int j = 0;
             while (j <= i) 
             {
                 pthread_mutex_destroy(&simulation->philosophers[j].mutex);
+                pthread_mutex_destroy(&simulation->philosophers[j].eating_mutex);
                 if (j < i) 
                     pthread_mutex_destroy(&simulation->forks[j].mutex);
                 ++j;
             }
             pthread_mutex_destroy(&simulation->scheduler_mutex);
-            return;
-       
+            free(simulation->philosophers);
+            free(simulation->forks);
+            exit(EXIT_FAILURE);
         }
         if (pthread_mutex_init(&simulation->philosophers[i].eating_mutex, NULL) != 0)
             exit(EXIT_FAILURE);
@@ -104,10 +110,10 @@ void free_simulation(t_simulation *simulation)
     printf("Libération des ressources de simulation.\n");
     if (simulation)
     {
+        pthread_mutex_destroy(&simulation->scheduler_mutex);
         if (simulation->philosophers)
         {
             i = 0;
-            printf("if 1\n");
             while (i < simulation->params->number_of_philosophers)
             {
                 pthread_mutex_destroy(&simulation->philosophers[i].mutex);
@@ -120,7 +126,6 @@ void free_simulation(t_simulation *simulation)
         if (simulation->forks)
         {
             i = 0;
-            printf("if 2\n");
             while (i < simulation->params->number_of_philosophers)
             {
                 pthread_mutex_destroy(&simulation->forks[i].mutex);
@@ -130,7 +135,6 @@ void free_simulation(t_simulation *simulation)
             simulation->forks = NULL;
         }
         pthread_mutex_destroy(&simulation->scheduler_mutex);
-        // pthread_mutex_destroy(&simulation->start_barrier);
         printf("Ressources libérées pour la simulation.\n");
     }
     
