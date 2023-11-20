@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:04:36 by juandrie          #+#    #+#             */
-/*   Updated: 2023/11/08 19:04:57 by juandrie         ###   ########.fr       */
+/*   Updated: 2023/11/17 14:12:16 by julietteand      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ long long current_timestamp_in_ms()
 void display_log(t_simulation *simulation, int philosopher_id, const char *action) 
 {
         pthread_mutex_lock(&log_mutex);
-        // printf("%lld %d %s\n", current_timestamp_in_ms(), philosopher_id, action);
         printf("%lld %d %s\n", current_timestamp_in_ms() - simulation->start_time, philosopher_id, action);
         pthread_mutex_unlock(&log_mutex);
 }

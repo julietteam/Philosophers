@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:26:11 by juandrie          #+#    #+#             */
-/*   Updated: 2023/11/15 18:44:54 by juandrie         ###   ########.fr       */
+/*   Updated: 2023/11/17 14:19:42 by julietteand      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int main(int ac, char **av)
     simulation.start_time = current_timestamp_in_ms(); 
     if (!init_simulation(&simulation, simulation.params->number_of_philosophers))
     {
-        printf("Failed to initialize simulation\n");
+        //printf("Failed to initialize simulation\n");
         free(simulation.params);
         pthread_mutex_destroy(&log_mutex);
         return EXIT_FAILURE;
@@ -53,41 +53,12 @@ int main(int ac, char **av)
     i = 0;
     while (i < simulation.params->number_of_philosophers) 
     {
-        // if (simulation.philosophers[i].thread_launched) 
-        // {
-            printf("rejoindre le thread du philo %d\n", i);
+            //printf("rejoindre le thread du philo %d\n", i);
             pthread_join(simulation.philosophers[i].thread, NULL);
-        //     simulation.philosophers[i].thread_launched = false;
-        // }
-        // if (simulation.philosophers[i].monitor_launched) 
-        // {
-            printf("thread du philo %d rejoint\n", i);
+            //printf("thread du philo %d rejoint\n", i);
             pthread_join(simulation.philosophers[i].monitor_thread, NULL);
-        //     simulation.philosophers[i].monitor_launched = false;
-        // }
         i++;
     }
-    // bool allThreadsJoined = false;
-    // while (!allThreadsJoined) 
-    // {
-    //     pthread_mutex_lock(&simulation.scheduler_mutex);
-    //     if (!simulation.is_running) 
-    //     {
-    //         printf("Fin de la simulation\n");
-    //         for (int i = 0; i < simulation.params->number_of_philosophers; i++) {
-    //         pthread_join(simulation.philosophers[i].thread, NULL);
-    //         pthread_join(simulation.philosophers[i].monitor_thread, NULL);
-    //     }
-    //     allThreadsJoined = true;
-    // }
-    // pthread_mutex_unlock(&simulation.scheduler_mutex);
-    // }
-
-        // Vérification de l'état is_running
-    pthread_mutex_lock(&simulation.scheduler_mutex);
-    if (!simulation.is_running)
-        printf("Fin de la simulation\n");
-    pthread_mutex_unlock(&simulation.scheduler_mutex);
     free_simulation(&simulation);
     free(simulation.params);
     pthread_mutex_destroy(&log_mutex);

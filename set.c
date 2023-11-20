@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:34:09 by juandrie          #+#    #+#             */
-/*   Updated: 2023/11/15 15:37:52 by juandrie         ###   ########.fr       */
+/*   Updated: 2023/11/17 14:21:06 by julietteand      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,27 +14,25 @@
 
 int allocate_simulation_resources(t_simulation *simulation, int number_of_philosophers)
 {
-    printf("Allocation des ressources pour %d philosophes.\n", number_of_philosophers);
+    //printf("Allocation des ressources pour %d philosophes.\n", number_of_philosophers);
     if (number_of_philosophers <= 0)
         return (0); 
 
     simulation->philosophers = malloc(sizeof(t_philosopher) * number_of_philosophers);
     if (!simulation->philosophers)
     {
-        printf("Échec de l'allocation pour les philosophes.\n");
-        // free(simulation->philosophers);
-        // simulation->philosophers = NULL;
+        //printf("Échec de l'allocation pour les philosophes.\n");
         return (0);
     }
     simulation->forks = malloc(sizeof(t_fork) * number_of_philosophers);
     if (!simulation->forks)
     {
-        printf("Échec de l'allocation pour les fourchettes.\n");
+        //printf("Échec de l'allocation pour les fourchettes.\n");
         free(simulation->forks);
         simulation->forks = NULL;
         return (0);
     }
-    printf("Allocation des ressources réussie.\n");
+    //printf("Allocation des ressources réussie.\n");
     return (1);
 }
 
@@ -42,7 +40,7 @@ void initialize_simulation_data(t_simulation *simulation, int number_of_philosop
 {
     if (!simulation || !simulation->philosophers || !simulation->forks)
         exit(EXIT_FAILURE);
-    printf("Initialisation des données pour la simulation.\n");
+    //printf("Initialisation des données pour la simulation.\n");
 
     if (pthread_mutex_init(&simulation->scheduler_mutex, NULL) != 0) 
         exit(EXIT_FAILURE);
@@ -50,7 +48,7 @@ void initialize_simulation_data(t_simulation *simulation, int number_of_philosop
     while ( i < number_of_philosophers) 
     {
         simulation->philosophers[i].id = i + 1;
-        printf("Initialisation du philosophe %d.\n", i + 1);
+        //printf("Initialisation du philosophe %d.\n", i + 1);
         simulation->philosophers[i].last_meal_time = current_timestamp_in_ms();
         simulation->philosophers[i].meals_eaten = 0;
         simulation->philosophers[i].is_dead = 0; 
@@ -87,7 +85,7 @@ void initialize_simulation_data(t_simulation *simulation, int number_of_philosop
     }
     simulation->full_philosophers = 0;
     simulation->is_running = 1;
-    printf("Données initialisées pour tous les philosophes.\n");
+    //printf("Données initialisées pour tous les philosophes.\n");
 }
 
 
@@ -107,7 +105,7 @@ void free_simulation(t_simulation *simulation)
 {
     int i;
     
-    printf("Libération des ressources de simulation.\n");
+    //printf("Libération des ressources de simulation.\n");
     if (simulation)
     {
         pthread_mutex_destroy(&simulation->scheduler_mutex);
@@ -135,7 +133,7 @@ void free_simulation(t_simulation *simulation)
             simulation->forks = NULL;
         }
         pthread_mutex_destroy(&simulation->scheduler_mutex);
-        printf("Ressources libérées pour la simulation.\n");
+        //printf("Ressources libérées pour la simulation.\n");
     }
     
 }
