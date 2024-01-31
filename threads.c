@@ -6,75 +6,136 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:27:07 by juandrie          #+#    #+#             */
-/*   Updated: 2023/11/02 17:34:50 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/01/31 18:52:26 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 
-// void *philosopher_routine(void *arg)
-// {
-//     t_philosopher *philosopher = (t_philosopher *)arg;
-//     philosopher->last_meal_time = current_timestamp_in_ms(); // Initialisez last_meal_time avec le temps actuel
-//     philosopher->is_dead = 0; // Le philosophe commence vivant
-//     pthread_mutex_t *first_fork;
-//     pthread_mutex_t *second_fork;
+bool	check_philosopher_status(t_philosopher *philosopher)
+{
+	long long	time_since_last_meal;
+	bool		timed_out;
 
-//     // Initialisation des fourchettes basée sur l'ID du philosophe
-//     if (philosopher->id % 2 == 0)
-//     {
-//         first_fork = &philosopher->left_fork->mutex;
-//         second_fork = &philosopher->right_fork->mutex;
-//     }
-//     else
-//     {
-//         first_fork = &philosopher->right_fork->mutex;
-//         second_fork = &philosopher->left_fork->mutex;
-//     }
+	time_since_last_meal = current_timestamp_in_ms() - philosopher->last_meal_time;
+	timed_out = time_since_last_meal > philosopher->params.time_to_die;
+	if (timed_out && !philosopher->is_dead)
+	{
+		philosopher->is_dead = 1;
+		display_log(philosopher->simulation, philosopher->id, "died");
+		return (true);
+	}
+	return (false);
+}
 
-//     while (1)
-//     {
-//         if (current_timestamp_in_ms() - philosopher->last_meal_time > philosopher->params.time_to_die)
-//         {
-//             display_log(philosopher->id, "died");
-//             pthread_exit(NULL);  // Terminer le thread du philosophe
-//         }
+bool	update_simulation_status(t_philosopher *philosopher)
+{
+	bool	is_running_local;
 
-//         display_log(philosopher->id, "is thinking");
-//         usleep(10000); 
+	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+	if (philosopher->is_dead)
+		philosopher->simulation->is_running = 0;
+	is_running_local = philosopher->simulation->is_running;
+	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 
-//         // Vérification de l'ordonnanceur pour s'assurer que c'est le tour de ce philosophe de manger
-//         pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
-//         while (philosopher->id != philosopher->simulation->current_philosopher_id)
-//         {
-//             pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-//             usleep(5000);  // Attendre un peu avant de vérifier à nouveau
-//             pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
-//         }
+	return (is_running_local);
+}
 
-//         // Prendre les fourchettes et manger
-//         pthread_mutex_lock(first_fork);
-//         display_log(philosopher->id, "has taken a fork");
-//         usleep(1000);
-//         pthread_mutex_lock(second_fork);
-//         display_log(philosopher->id, "has taken a fork");
+void	monitor_philosopher_cycle(t_philosopher *philosopher)
+{
+	bool	is_running_local;
 
-//         display_log(philosopher->id, "is eating");
-//         philosopher->last_meal_time = current_timestamp_in_ms();
-//         usleep(philosopher->params.time_to_eat);
+	while (1)
+	{
+		usleep(5000);
+		pthread_mutex_lock(&philosopher->mutex);
+		if (check_philosopher_status(philosopher))
+		{
+			pthread_mutex_unlock(&philosopher->mutex);
+			is_running_local = update_simulation_status(philosopher);
+			if (!is_running_local)
+				break ;
+		}
+		else
+		{
+			pthread_mutex_unlock(&philosopher->mutex);
+			pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+			is_running_local = philosopher->simulation->is_running;
+			pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+			if (!is_running_local)
+				break ;
+		}
+	}
+}
 
-//         // Mettre à jour l'ordonnanceur pour le prochain philosophe
-//         philosopher->simulation->current_philosopher_id = (philosopher->id % philosopher->params.number_of_philosophers) + 1;
-//         pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+void	*monitor_philosopher(void *arg)
+{
+	t_philosopher	*philosopher;
 
-//         // Reposer les fourchettes
-//         pthread_mutex_unlock(second_fork);
-//         pthread_mutex_unlock(first_fork);
+	philosopher = (t_philosopher *)arg;
+	monitor_philosopher_cycle(philosopher);
+	return (NULL);
+}
 
-//         // Dormir
-//         display_log(philosopher->id, "is sleeping");
-//         usleep(philosopher->params.time_to_sleep);
-//     }
-//     return (NULL);
-// }
+bool	create_philosopher_thread(t_simulation *simulation, int i)
+{
+	if (pthread_create(&simulation->philosophers[i].thread, NULL, philosopher_routine, &simulation->philosophers[i]) != 0)
+	{
+		simulation->philosophers[i].thread_launched = false;
+		return (false);
+	}
+	simulation->philosophers[i].thread_launched = true;
+
+	if (pthread_create(&simulation->philosophers[i].monitor_thread, NULL, monitor_philosopher, &simulation->philosophers[i]) != 0)
+	{
+		simulation->philosophers[i].monitor_launched = false;
+		return (false);
+	}
+	simulation->philosophers[i].monitor_launched = true;
+
+	return (true);
+}
+
+void	handle_thread_creation_error(t_simulation *simulation, int philosopher_count)
+{
+	int	j;
+
+	j = 0;
+	while (j < philosopher_count)
+	{
+		if (simulation->philosophers[j].thread_launched)
+			pthread_join(simulation->philosophers[j].thread, NULL);
+		if (simulation->philosophers[j].monitor_launched)
+			pthread_join(simulation->philosophers[j].monitor_thread, NULL);
+		j++;
+	}
+	exit_cleanly(simulation, philosopher_count);
+}
+
+void	start_all_philosopher_threads(t_simulation *simulation)
+{
+	int		philosopher_count;
+	int		i;
+	bool	error_occurred;
+
+	philosopher_count = simulation->params->number_of_philosophers;
+	error_occurred = false;
+	i = 0;
+	while (i < philosopher_count)
+	{
+		if (!create_philosopher_thread(simulation, i))
+		{
+			error_occurred = true;
+			break ;
+		}
+		i++;
+	}
+	if (error_occurred)
+		handle_thread_creation_error(simulation, philosopher_count);
+}
+
+void	start_philosopher_threads(t_simulation *simulation)
+{
+	start_all_philosopher_threads(simulation);
+}
