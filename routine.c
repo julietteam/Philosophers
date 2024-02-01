@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:17:50 by juandrie          #+#    #+#             */
-/*   Updated: 2024/01/31 19:33:05 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/01/31 23:48:00 by julietteand      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	eat(t_philosopher *philosopher)
 		usleep(100);
 		if (!philosopher->simulation->is_running)
 		{
+			printf("Philosophe %d arrêté pendant qu'il mange.\n", philosopher->id);
 			pthread_mutex_unlock(&philosopher->mutex);
 			pthread_mutex_unlock(&philosopher->eating_mutex);
 			return ;
@@ -65,6 +66,7 @@ void	eat(t_philosopher *philosopher)
 		remaining = philosopher->params.time_to_eat - elapsed;
 	}
 	philosopher->meals_eaten++;
+	printf("Philosophe %d a fini de manger.\n", philosopher->id);
 	pthread_mutex_unlock(&philosopher->eating_mutex);
 	pthread_mutex_unlock(&philosopher->mutex);
 }
@@ -89,6 +91,10 @@ void	think_and_sleep(t_philosopher *philosopher)
 		elapsed = current_timestamp_in_ms() - start_time;
 		remaining = philosopher->params.time_to_sleep - elapsed;
 	}
+	if (!philosopher->simulation->is_running) {
+        printf("Philosophe %d arrêté avant de commencer à penser.\n", philosopher->id);
+        return;
+    }
 	display_log(philosopher->simulation, philosopher->id, "is thinking");
 	usleep(1000);
 }
