@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:34:09 by juandrie          #+#    #+#             */
-/*   Updated: 2024/01/31 15:29:43 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/01 14:38:26 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,13 +62,15 @@ int	initialize_philosopher(t_simulation *simulation, int i)
 	simulation->philosophers[i].simulation = simulation;
 	simulation->philosophers[i].full = 0;
 	simulation->philosophers[i].left_fork = &simulation->forks[i];
-	simulation->philosophers[i].right_fork = &simulation->forks[(i + 1) % \
-	simulation->params->number_of_philosophers];
+	if (simulation->params->number_of_philosophers == 1)
+		simulation->philosophers[i].right_fork = NULL;
+	else 
+		simulation->philosophers[i].right_fork = &simulation->forks[(i + 1) % simulation->params->number_of_philosophers];
 	simulation->philosophers[i].monitor_launched = false;
 	simulation->philosophers[i].thread_launched = false;
 
-	if (pthread_mutex_init(&simulation->philosophers[i].mutex, NULL) != 0 \
-	|| pthread_mutex_init(&simulation->philosophers[i].eating_mutex, NULL) != 0)
+	if (pthread_mutex_init(&simulation->philosophers[i].mutex, NULL) != 0)
+	//||pthread_mutex_init(&simulation->philosophers[i].eating_mutex, NULL) != 0)
 		return (0);
 	return (1);
 }
@@ -80,12 +82,10 @@ void	initialize_simulation_data(t_simulation *simulation, int number_of_philosop
 	i = 0;
 	if (!simulation || !simulation->philosophers || !simulation->forks)
 		exit(EXIT_FAILURE);
-	//printf("Initialisation des données pour la simulation.\n");
 	if (!initialize_mutexes(simulation))
 		exit(EXIT_FAILURE);
 	while (i < number_of_philosophers)
 	{
-		//printf("Initialisation du philosophe %d.\n", i + 1);
 		if (!initialize_philosopher(simulation, i))
 			exit(EXIT_FAILURE);
 		i++;
@@ -93,7 +93,6 @@ void	initialize_simulation_data(t_simulation *simulation, int number_of_philosop
 	simulation->full_philosophers = 0;
 	simulation->is_running = 1;
 
-	//printf("Données initialisées pour tous les philosophes.\n");
 }
 
 

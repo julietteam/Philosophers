@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 12:31:46 by juandrie          #+#    #+#             */
-/*   Updated: 2024/01/31 15:30:22 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/01 14:09:04 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,7 @@ void	join_philosopher_threads(t_simulation *simulation)
 	i = 0;
 	while (i < simulation->params->number_of_philosophers)
 	{
-		//printf("Rejoindre le thread du philo %d\n", i);
 		pthread_join(simulation->philosophers[i].thread, NULL);
-		//printf("Thread du philo %d rejoint\n", i);
 		pthread_join(simulation->philosophers[i].monitor_thread, NULL);
 		i++;
 	}
@@ -59,10 +57,6 @@ void	join_philosopher_threads(t_simulation *simulation)
 
 void	finalize_simulation(t_simulation *simulation)
 {
-	pthread_mutex_lock(&simulation->scheduler_mutex);
-	// if (!simulation->is_running)
-	// 	printf("Fin de la simulation\n");
-	pthread_mutex_unlock(&simulation->scheduler_mutex);
 	free_simulation(simulation);
 	free(simulation->params);
 }

@@ -6,7 +6,7 @@
 #    By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/25 17:31:16 by juandrie          #+#    #+#              #
-#    Updated: 2024/01/31 14:38:20 by juandrie         ###   ########.fr        #
+#    Updated: 2024/02/01 18:33:04 by juandrie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,9 +17,8 @@ TARGET = philo
 CC = gcc
 
 # Flags de compilation (optimisation, warnings)
-CFLAGS = -Wall -Wextra -Werror -g3 
-##-fsanitize=thread
-##LDFLAGS=-fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=thread
+LDFLAGS=-fsanitize=thread
 
 # Lien vers les bibliothèques nécessaires (ex. pthread)
 # LDFLAGS = -lpthread

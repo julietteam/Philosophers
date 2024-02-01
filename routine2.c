@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routine2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
+/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 14:30:40 by juandrie          #+#    #+#             */
-/*   Updated: 2024/01/31 22:34:48 by julietteand      ###   ########.fr       */
+/*   Updated: 2024/02/01 17:43:15 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,39 +46,46 @@ void	philosopher_actions(t_philosopher *philosopher, pthread_mutex_t *first_fork
 {
 	if (!*is_running_local)
 		return;
-	take_forks(philosopher, first_fork, second_fork);
+	if (take_forks(philosopher, first_fork, second_fork) == false)
+		return ;
 	if (philosopher->full != 1 && *is_running_local) 
 	{
 		eat(philosopher);
+		if (!*is_running_local)
+			return ;
 		update_scheduler(philosopher);
 	}
 	put_forks(first_fork, second_fork);
+	if (!*is_running_local)
+		return;
 }
 
 void philosopher_life_cycle(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork) 
 {
-    bool is_running_local;
-	
-	display_log(philosopher->simulation, philosopher->id, "is thinking");
-    while (1)
-	{
-    
-        pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
-        is_running_local = philosopher->simulation->is_running;
-        pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-        
-        if (!is_running_local)
-            break;
-        philosopher_actions(philosopher, first_fork, second_fork, &is_running_local);
+	bool	is_running_local;
 
-        pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
-        is_running_local = philosopher->simulation->is_running;
-        pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-        
-        if (!is_running_local || philosopher->full == 1)
-            break;
-        think_and_sleep(philosopher);
-    }
+	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+	display_log(philosopher->simulation, philosopher->id, "is thinking");
+	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	while (1)
+	{
+
+		pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+		is_running_local = philosopher->simulation->is_running;
+		pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+
+		if (!is_running_local)
+			break;
+		philosopher_actions(philosopher, first_fork, second_fork, &is_running_local);
+
+		pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+		is_running_local = philosopher->simulation->is_running;
+		pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+		
+		if (!is_running_local || philosopher->full == 1)
+			break;
+		think_and_sleep(philosopher);
+	}
 }
 
 

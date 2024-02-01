@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   threads.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
+/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:27:07 by juandrie          #+#    #+#             */
-/*   Updated: 2024/01/31 23:42:30 by julietteand      ###   ########.fr       */
+/*   Updated: 2024/02/01 18:35:54 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,18 @@ bool	check_philosopher_status(t_philosopher *philosopher)
 	long long	time_since_last_meal;
 	bool		timed_out;
 
-	time_since_last_meal = current_timestamp_in_ms() - philosopher->last_meal_time;
-	timed_out = time_since_last_meal > philosopher->params.time_to_die;
 	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
-	if (timed_out && !philosopher->is_dead)
+	if (philosopher->simulation->is_running)
 	{
-		printf("Philosophe %d a dépassé son temps pour mourir de faim.\n", philosopher->id);
-		philosopher->is_dead = 1;
-		display_log(philosopher->simulation, philosopher->id, "died");
-		pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-		return (true);
+		time_since_last_meal = current_timestamp_in_ms() - philosopher->last_meal_time;
+		timed_out = time_since_last_meal > philosopher->params.time_to_die;
+		if (timed_out && !philosopher->is_dead)
+		{
+			philosopher->is_dead = 1;
+			display_log(philosopher->simulation, philosopher->id, "died");
+			pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+			return (true);
+		}
 	}
 	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	return (false);
@@ -39,10 +41,7 @@ bool	update_simulation_status(t_philosopher *philosopher)
 
 	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 	if (philosopher->is_dead)
-	{
-		printf("Mise à jour de l'état de la simulation à l'arrêt en raison de la mort du philosophe %d.\n", philosopher->id);
 		philosopher->simulation->is_running = 0;
-	}
 	is_running_local = philosopher->simulation->is_running;
 	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 
@@ -59,14 +58,13 @@ void	monitor_philosopher_cycle(t_philosopher *philosopher)
 		pthread_mutex_lock(&philosopher->mutex);
 		if (check_philosopher_status(philosopher))
 		{
-			printf("Philosophe %d a été détecté comme mort.\n", philosopher->id);
-			pthread_mutex_unlock(&philosopher->mutex);
 			is_running_local = update_simulation_status(philosopher);
-			if (!is_running_local)
+			if (is_running_local == 0)
 			{
-				printf("Arrêt de la simulation signalé par le philosophe %d.\n", philosopher->id);
-				break ;
+				pthread_mutex_unlock(&philosopher->mutex);
+				return ;
 			}
+				
 		}
 		else
 		{
@@ -75,13 +73,9 @@ void	monitor_philosopher_cycle(t_philosopher *philosopher)
 			is_running_local = philosopher->simulation->is_running;
 			pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 			if (!is_running_local)
-			{
-				printf("Arrêt de la simulation détecté par le philosophe %d.\n", philosopher->id);
-				break ;
-			}
+				return ;
 		}
 	}
-	 printf("Fin de la surveillance du philosophe %d.\n", philosopher->id);
 }
 
 void	*monitor_philosopher(void *arg)
