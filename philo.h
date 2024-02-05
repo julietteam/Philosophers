@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:27:45 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/05 13:11:46 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/05 18:59:49 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ typedef struct s_philosopher
 	t_params			params;
 	struct s_simulation	*simulation;
 	pthread_mutex_t		mutex;
-	pthread_mutex_t		eating_mutex;
 }						t_philosopher;
 
 typedef struct s_simulation
@@ -61,6 +60,8 @@ typedef struct s_simulation
 	t_philosopher	*philosophers;
 	t_fork			*forks;
 	pthread_mutex_t	scheduler_mutex; // Mutex pour l'ordonnanceur
+	pthread_mutex_t	death;
+	pthread_mutex_t	write;
 	int				current_philosopher_id;
 	int				is_running;
 	int				total_meals_eaten;

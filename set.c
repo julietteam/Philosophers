@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:34:09 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/01 14:38:26 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/05 19:26:42 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	allocate_simulation_resources(t_simulation *simulation, int number_of_philosophers)
 {
-	//printf("Allocation des ressources pour %d philosophes.\n", number_of_philosophers);
+
 	if (number_of_philosophers <= 0)
 		return (0); 
 	simulation->philosophers = malloc(sizeof(t_philosopher) * number_of_philosophers);
@@ -31,7 +31,6 @@ int	allocate_simulation_resources(t_simulation *simulation, int number_of_philos
 		simulation->forks = NULL;
 		return (0);
 	}
-	//printf("Allocation des ressources réussie.\n");
 	return (1);
 }
 
@@ -42,7 +41,10 @@ int	initialize_mutexes(t_simulation *simulation)
 	i = 0;
 	if (pthread_mutex_init(&simulation->scheduler_mutex, NULL) != 0)
 		return (0);
-
+	if (pthread_mutex_init(&simulation->death, NULL) != 0)
+		return (0);
+	if (pthread_mutex_init(&simulation->write, NULL) != 0)
+		return (0);
 	while (i < simulation->params->number_of_philosophers)
 	{
 		if (pthread_mutex_init(&simulation->forks[i].mutex, NULL) != 0)
@@ -70,7 +72,6 @@ int	initialize_philosopher(t_simulation *simulation, int i)
 	simulation->philosophers[i].thread_launched = false;
 
 	if (pthread_mutex_init(&simulation->philosophers[i].mutex, NULL) != 0)
-	//||pthread_mutex_init(&simulation->philosophers[i].eating_mutex, NULL) != 0)
 		return (0);
 	return (1);
 }

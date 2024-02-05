@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 13:40:13 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/01 13:52:18 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/05 16:41:56 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	destroy_philosopher_mutexes(t_simulation *simulation)
 	while (i < simulation->params->number_of_philosophers)
 	{
 		pthread_mutex_destroy(&simulation->philosophers[i].mutex);
-		pthread_mutex_destroy(&simulation->philosophers[i].eating_mutex);
+		//pthread_mutex_destroy(&simulation->philosophers[i].eating_mutex);
 		i++;
 	}
 }
@@ -65,7 +65,7 @@ void	free_simulation(t_simulation *simulation)
 		destroy_fork_mutexes(simulation);
 		free_forks(simulation);
 		pthread_mutex_destroy(&simulation->scheduler_mutex);
-		//printf("Ressources libérées pour la simulation.\n");
+		pthread_mutex_destroy(&simulation->death);
 	}
 }
 

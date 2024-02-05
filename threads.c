@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:27:07 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/05 12:58:19 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/05 19:27:49 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,13 @@ bool	check_philosopher_status(t_philosopher *philosopher)
 		timed_out = time_since_last_meal > philosopher->params.time_to_die;
 		if (timed_out && !philosopher->is_dead)
 		{
-			//pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+			pthread_mutex_lock(&philosopher->simulation->death);
 			philosopher->is_dead = 1;
+			pthread_mutex_unlock(&philosopher->simulation->death);
 			philosopher->simulation->is_running = 0; 
+			pthread_mutex_lock(&philosopher->simulation->write);
 			display_log(philosopher->simulation, philosopher->id, "died");
+			pthread_mutex_unlock(&philosopher->simulation->write);
 			pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 			return (true);
 		}
@@ -44,8 +47,9 @@ bool	update_simulation_status(t_philosopher *philosopher)
 	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 	if (philosopher->is_dead)
 		philosopher->simulation->is_running = 0;
-	is_running_local = philosopher->simulation->is_running;
 	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	is_running_local = philosopher->simulation->is_running;
+	//pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	return (is_running_local);
 }
 

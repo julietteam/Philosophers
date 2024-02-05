@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 14:30:40 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/05 13:11:50 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/05 19:19:30 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,12 @@ int handle_single_philosopher(t_philosopher *philosopher)
 {
 	if (philosopher->simulation->params->number_of_philosophers == 1)
 	{
-		pthread_mutex_lock(&philosopher->left_fork->mutex);
+		// pthread_mutex_lock(&philosopher->left_fork->mutex);
+		pthread_mutex_lock(&philosopher->simulation->write);
 		display_log(philosopher->simulation, philosopher->id, "has taken a fork");
 		usleep(philosopher->simulation->params->time_to_die * 1000);
-		pthread_mutex_unlock(&philosopher->left_fork->mutex);
+		pthread_mutex_unlock(&philosopher->simulation->write);
+		// pthread_mutex_unlock(&philosopher->left_fork->mutex);
 		return (1);
 	}
 	return (0);
@@ -65,9 +67,9 @@ void philosopher_life_cycle(t_philosopher *philosopher, pthread_mutex_t *first_f
 {
 	bool	is_running_local;
 
-	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+	pthread_mutex_lock(&philosopher->simulation->write);
 	display_log(philosopher->simulation, philosopher->id, "is thinking");
-	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	pthread_mutex_unlock(&philosopher->simulation->write);
 	while (1)
 	{
 
@@ -82,7 +84,6 @@ void philosopher_life_cycle(t_philosopher *philosopher, pthread_mutex_t *first_f
 		pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 		is_running_local = philosopher->simulation->is_running;
 		pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-		
 		if (!is_running_local || philosopher->full == 1)
 			break;
 		think_and_sleep(philosopher);
