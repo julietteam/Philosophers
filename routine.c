@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
+/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:17:50 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/02 16:55:47 by julietteand      ###   ########.fr       */
+/*   Updated: 2024/02/05 13:12:41 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,35 +18,25 @@ void	take_forks(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread
 
 	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 	bool is_running = philosopher->simulation->is_running;
-	//pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 
 	if (!is_running || philosopher->is_dead)
         return ;
-	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	pthread_mutex_lock(first_fork);
-	if (!philosopher->simulation->is_running || philosopher->is_dead) //(!philosopher->simulation->is_running )
-	{
-		pthread_mutex_unlock(first_fork);
-		return ;
-	}
-	//pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
-	display_log(philosopher->simulation, philosopher->id, "has taken a fork");
-	//pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	pthread_mutex_lock(second_fork);
-	if (!philosopher->simulation->is_running || philosopher->is_dead)  //(!philosopher->simulation->is_running)
-	{
-		pthread_mutex_unlock(first_fork);
-		pthread_mutex_unlock(second_fork);
+	if (!philosopher->simulation->is_running || philosopher->is_dead)
 		return ;
-	}
-	//pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 	display_log(philosopher->simulation, philosopher->id, "has taken a fork");
-	//pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-	return;
+	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	if (!philosopher->simulation->is_running || philosopher->is_dead)
+		return ;
+	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+	display_log(philosopher->simulation, philosopher->id, "has taken a fork");
+	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	return ;
 	
 }
-
-
 
 
 void	put_forks(pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
@@ -137,9 +127,7 @@ void	update_scheduler(t_philosopher *philosopher)
 	if (philosopher->params.number_of_times_each_philosopher_must_eat > 0 &&
 	philosopher->meals_eaten >= philosopher->params.number_of_times_each_philosopher_must_eat)
 	{
-		pthread_mutex_lock(&philosopher->mutex);
 		philosopher->full = 1;
-		pthread_mutex_unlock(&philosopher->mutex);
 		philosopher->simulation->full_philosophers++;
 		if (philosopher->simulation->full_philosophers == philosopher->params.number_of_philosophers)
 		{

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   threads.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
+/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:27:07 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/02 16:41:01 by julietteand      ###   ########.fr       */
+/*   Updated: 2024/02/05 12:58:19 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ bool	check_philosopher_status(t_philosopher *philosopher)
 		timed_out = time_since_last_meal > philosopher->params.time_to_die;
 		if (timed_out && !philosopher->is_dead)
 		{
+			//pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 			philosopher->is_dead = 1;
 			philosopher->simulation->is_running = 0; 
 			display_log(philosopher->simulation, philosopher->id, "died");

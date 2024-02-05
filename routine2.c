@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routine2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
+/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 14:30:40 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/02 16:56:11 by julietteand      ###   ########.fr       */
+/*   Updated: 2024/02/05 13:11:50 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ int handle_single_philosopher(t_philosopher *philosopher)
 void	philosopher_actions(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork, bool *is_running_local)
 {
 	bool	is_running;
+
 
 	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 	is_running = *is_running_local;
