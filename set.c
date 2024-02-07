@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:34:09 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/05 19:26:42 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/07 12:04:56 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ int	initialize_philosopher(t_simulation *simulation, int i)
 	simulation->philosophers[i].id = i + 1;
 	simulation->philosophers[i].last_meal_time = current_timestamp_in_ms();
 	simulation->philosophers[i].meals_eaten = 0;
+	simulation->count = 0;
+	simulation->flag = 0;
 	simulation->philosophers[i].is_dead = 0;
 	simulation->philosophers[i].params = *(simulation->params);
 	simulation->philosophers[i].simulation = simulation;

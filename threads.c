@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:27:07 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/05 19:27:49 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/07 16:36:34 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,14 @@ bool	check_philosopher_status(t_philosopher *philosopher)
 			pthread_mutex_lock(&philosopher->simulation->death);
 			philosopher->is_dead = 1;
 			pthread_mutex_unlock(&philosopher->simulation->death);
-			philosopher->simulation->is_running = 0; 
 			pthread_mutex_lock(&philosopher->simulation->write);
 			display_log(philosopher->simulation, philosopher->id, "died");
 			pthread_mutex_unlock(&philosopher->simulation->write);
+			philosopher->simulation->is_running = 0; 
 			pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 			return (true);
 		}
+	
 	}
 	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	return (false);
@@ -44,12 +45,13 @@ bool	update_simulation_status(t_philosopher *philosopher)
 {
 	bool	is_running_local;
 
-	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 	if (philosopher->is_dead)
+	{
+		pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 		philosopher->simulation->is_running = 0;
-	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+		pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	}
 	is_running_local = philosopher->simulation->is_running;
-	//pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	return (is_running_local);
 }
 
@@ -60,20 +62,14 @@ void	monitor_philosopher_cycle(t_philosopher *philosopher)
 	while (1)
 	{
 		usleep(5000);
-		pthread_mutex_lock(&philosopher->mutex);
 		if (check_philosopher_status(philosopher))
 		{
 			is_running_local = update_simulation_status(philosopher);
 			if (!is_running_local)
-			{
-				pthread_mutex_unlock(&philosopher->mutex);
 				return ;
-			}
-				
 		}
 		else
 		{
-			pthread_mutex_unlock(&philosopher->mutex);
 			pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 			is_running_local = philosopher->simulation->is_running;
 			pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);

@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 13:40:13 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/05 16:41:56 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/07 13:58:09 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ void	free_simulation(t_simulation *simulation)
 		free_forks(simulation);
 		pthread_mutex_destroy(&simulation->scheduler_mutex);
 		pthread_mutex_destroy(&simulation->death);
+		pthread_mutex_destroy(&simulation->write);
+		
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:27:45 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/05 18:59:49 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/07 13:48:16 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 typedef struct s_fork
 {
 	pthread_mutex_t	mutex;
+	int				id;
 }	t_fork;
 
 typedef struct s_params
@@ -67,6 +68,8 @@ typedef struct s_simulation
 	int				total_meals_eaten;
 	int				full_philosophers;
 	long long		start_time;
+	int				count;
+	int				flag;
 }		t_simulation;
 
 
