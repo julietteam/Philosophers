@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 14:30:40 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/07 16:15:22 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/07 19:40:50 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,11 @@ void	philosopher_actions(t_philosopher *philosopher, pthread_mutex_t *first_fork
 	is_running = *is_running_local;
 	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	if (!is_running || philosopher->is_dead)
+	{
 		return;
+	}
 	take_forks(philosopher, first_fork, second_fork);
-	if (philosopher->full != 1 && is_running)
+	if (philosopher->full != 1 && is_running) 
 	{
 		eat(philosopher);
 		update_scheduler(philosopher);
@@ -77,14 +79,14 @@ void philosopher_life_cycle(t_philosopher *philosopher, pthread_mutex_t *first_f
 		is_running_local = philosopher->simulation->is_running;
 		pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 
-		if (!is_running_local)
+		if (!is_running_local) //|| philosopher->is_dead
 			break;
 		philosopher_actions(philosopher, first_fork, second_fork, &is_running_local);
-
+		
 		pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 		is_running_local = philosopher->simulation->is_running;
 		pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-		if (!is_running_local || philosopher->full == 1)
+		if (!is_running_local || philosopher->full == 1 || philosopher->is_dead) //|| philosopher->is_dead
 		{
 			break;
 		}

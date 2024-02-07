@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:27:07 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/07 16:36:34 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/07 19:43:36 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ bool	update_simulation_status(t_philosopher *philosopher)
 {
 	bool	is_running_local;
 
+	//pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 	if (philosopher->is_dead)
 	{
 		pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
@@ -66,7 +67,9 @@ void	monitor_philosopher_cycle(t_philosopher *philosopher)
 		{
 			is_running_local = update_simulation_status(philosopher);
 			if (!is_running_local)
+			{
 				return ;
+			}
 		}
 		else
 		{
@@ -74,7 +77,9 @@ void	monitor_philosopher_cycle(t_philosopher *philosopher)
 			is_running_local = philosopher->simulation->is_running;
 			pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 			if (!is_running_local)
+			{
 				return ;
+			}
 		}
 	}
 }
