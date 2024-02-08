@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:26:11 by juandrie          #+#    #+#             */
-/*   Updated: 2024/01/31 14:48:11 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/08 17:56:24 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@ int	main(int ac, char **av)
 
 	if (!initialize_simulation(&simulation, ac, av))
 		return (EXIT_FAILURE);
-
-	start_simulation(&simulation);
+	if (start_philosopher_threads(&simulation) == -1)
+		return (-1);
 	join_philosopher_threads(&simulation);
 	finalize_simulation(&simulation);
 

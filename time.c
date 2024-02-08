@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:04:36 by juandrie          #+#    #+#             */
-/*   Updated: 2024/01/31 14:54:52 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/08 17:13:38 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,16 @@ long long	current_timestamp_in_ms(void)
 }
 
 // Fonction pour afficher les logs
-void	display_log(t_simulation *simulation, int philosopher_id, const char *action)
+int	display_log(t_simulation *simulation, int philosopher_id, const char *action, t_philosopher *philosopher)
 {
+	pthread_mutex_lock(&philosopher->simulation->death);
+	if (philosopher->is_dead == 1)
+	{
+		return (-1);
+	}
+	pthread_mutex_lock(&philosopher->simulation->write);
 	printf("%lld %d %s\n", current_timestamp_in_ms() - simulation->start_time, philosopher_id, action);
+	pthread_mutex_unlock(&philosopher->simulation->write);
+	pthread_mutex_unlock(&philosopher->simulation->death);
+	return (0);
 }

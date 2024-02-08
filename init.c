@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 12:31:46 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/01 14:09:04 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/08 17:19:20 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,6 @@ int	initialize_simulation(t_simulation *simulation, int ac, char **av)
 	return (1);
 }
 
-void	start_simulation(t_simulation *simulation)
-{
-	start_philosopher_threads(simulation);
-}
 
 void	join_philosopher_threads(t_simulation *simulation)
 {
