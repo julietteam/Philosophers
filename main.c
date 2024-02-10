@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:26:11 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/08 17:56:24 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/09 22:17:29 by julietteand      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,12 @@ int	main(int ac, char **av)
 		return (1);
 
 	if (!initialize_simulation(&simulation, ac, av))
-		return (EXIT_FAILURE);
+		return (-1);
 	if (start_philosopher_threads(&simulation) == -1)
 		return (-1);
-	join_philosopher_threads(&simulation);
-	finalize_simulation(&simulation);
-
+	if (join_philosopher_threads(&simulation) == -1)
+		return (-1);
+	if (finalize_simulation(&simulation) == -1)
+		return (-1);
 	return (0);
 }

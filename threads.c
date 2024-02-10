@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   threads.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:27:07 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/08 18:28:38 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/10 22:31:45 by julietteand      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,59 +17,87 @@ int	check_philosopher_status(t_philosopher *philosopher)
 {
 	long long	time_since_last_meal;
 	int			timed_out;
-
+	
 	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 	time_since_last_meal = current_timestamp_in_ms() - philosopher->last_meal_time;
 	timed_out = time_since_last_meal > philosopher->params.time_to_die;
-	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-	//printf("timed_out: %d\n", timed_out);
-	//printf("Philo mort: %d\n", philosopher->is_dead);
-	if (timed_out && !philosopher->is_dead)
+	if (timed_out && !philosopher->is_dead && !philosopher->simulation->stop)
 	{
 		pthread_mutex_lock(&philosopher->simulation->death);
 		philosopher->is_dead = 1;
 		pthread_mutex_unlock(&philosopher->simulation->death);
-		if (display_log(philosopher->simulation, philosopher->id, "died", philosopher) == -1)
+		if (display_log(philosopher->simulation, philosopher->id, "died", philosopher) == -1)	
 		{
-			return (-1);
-		}	
-		// pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+			pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+			return(-1);
+		}
+		philosopher->simulation->stop = 1;
+		pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 		return (-1);
 	}
-	//pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	if (philosopher->simulation->stop)
+	{
+		pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+		return (-1);
+	}
+	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	return (0); 
 }
 
 
-void	monitor_philosopher_cycle(t_philosopher *philosopher)
+int	monitor_philosopher_cycle(t_philosopher *philosopher)
 {
-	bool	is_running_local;
-	while (1)
+	
+	pthread_mutex_lock(&philosopher->simulation->death);
+	int dead = philosopher->is_dead;
+	pthread_mutex_unlock(&philosopher->simulation->death);
+	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+	int stop = philosopher->simulation->stop;
+	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	while (!dead && !stop)
 	{
 		usleep(5000);
-		printf("exit status: %d\n", philosopher->exit_status);
+		pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+		int full = philosopher->full;
+		pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+		if (full)
+		{
+			return (-1);
+		}
 		if (check_philosopher_status(philosopher) == -1)
 		{
-			break ;
-		}
-		else
-		{
-			is_running_local = philosopher->exit_status;
-			printf("exit status: %d\n", philosopher->exit_status);
-			if (!is_running_local)
-				break ;
+			return (-1);
 		}
 	}
+	//printf("FIN\n");
+	return (0);
 }
+
 
 void	*monitor_philosopher(void *arg)
 {
 	t_philosopher	*philosopher;
 
 	philosopher = (t_philosopher *)arg;
-	monitor_philosopher_cycle(philosopher);
+
+	pthread_mutex_lock(&philosopher->simulation->death);
+	int dead = philosopher->is_dead;
+	pthread_mutex_unlock(&philosopher->simulation->death);
+	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+	int stop = philosopher->simulation->stop;
+	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	while (!dead && !stop)
+	{
+		if (monitor_philosopher_cycle(philosopher) == -1)
+		{
+			//printf("FIN !!!!\n");
+			break ;
+		}
+	}
+	//printf("FINITO !!!!\n");
 	return (NULL);
 }
+
 
 bool	create_philosopher_thread(t_simulation *simulation, int i)
 {
@@ -80,13 +108,14 @@ bool	create_philosopher_thread(t_simulation *simulation, int i)
 	}
 	simulation->philosophers[i].thread_launched = true;
 
+	
 	if (pthread_create(&simulation->philosophers[i].monitor_thread, NULL, monitor_philosopher, &simulation->philosophers[i]) != 0)
 	{
 		simulation->philosophers[i].monitor_launched = false;
 		return (false);
 	}
 	simulation->philosophers[i].monitor_launched = true;
-
+	
 	return (true);
 }
 
@@ -98,12 +127,16 @@ void	handle_thread_creation_error(t_simulation *simulation, int philosopher_coun
 	while (j < philosopher_count)
 	{
 		if (simulation->philosophers[j].thread_launched)
+		{
 			pthread_join(simulation->philosophers[j].thread, NULL);
+		}
 		if (simulation->philosophers[j].monitor_launched)
+		{
 			pthread_join(simulation->philosophers[j].monitor_thread, NULL);
+		}
 		j++;
 	}
-	exit_cleanly(simulation, philosopher_count);
+	free_simulation(simulation);
 }
 
 int	start_philosopher_threads(t_simulation *simulation)
@@ -125,7 +158,9 @@ int	start_philosopher_threads(t_simulation *simulation)
 		i++;
 	}
 	if (error_occurred)
+	{
 		handle_thread_creation_error(simulation, philosopher_count);
+	}
 	return (0);
 }
 

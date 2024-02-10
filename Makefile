@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+         #
+#    By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/25 17:31:16 by juandrie          #+#    #+#              #
-#    Updated: 2024/02/05 18:40:14 by juandrie         ###   ########.fr        #
+#    Updated: 2024/02/10 22:44:56 by julietteand      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,8 +18,8 @@ CC = gcc
 
 # Flags de compilation (optimisation, warnings)
 CFLAGS = -Wall -Wextra -Werror -g3 
-##-fsanitize=thread
-##LDFLAGS=-fsanitize=thread
+#-fsanitize=thread
+#LDFLAGS=-fsanitize=thread
 
 # Lien vers les bibliothèques nécessaires (ex. pthread)
 # LDFLAGS = -lpthread

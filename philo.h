@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:27:45 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/08 18:26:49 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/10 19:49:14 by julietteand      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ typedef struct s_philosopher
 	int					is_dead; // etat de vie du Philosophe : 1 si mort, 0 si vivant
 	long long			last_meal_time;
 	int					meals_eaten;
-	int					exit_status;
 	t_fork				*left_fork;
 	t_fork				*right_fork;
 	pthread_t			thread;
@@ -65,7 +64,8 @@ typedef struct s_simulation
 	pthread_mutex_t	death;
 	pthread_mutex_t	write;
 	int				current_philosopher_id;
-	int				is_running;
+	//int				is_running;
+	int				stop;
 	int				total_meals_eaten;
 	int				full_philosophers;
 	long long		start_time;
@@ -79,17 +79,16 @@ void			free_simulation(t_simulation *simulation);
 int				start_philosopher_threads(t_simulation *simulation);
 long long		current_timestamp_in_ms(void);
 int				display_log(t_simulation *simulation, int philosopher_id, const char *action, t_philosopher *philosopher);
-void			finalize_simulation(t_simulation *simulation);
-void			join_philosopher_threads(t_simulation *simulation);
+int				finalize_simulation(t_simulation *simulation);
+int				join_philosopher_threads(t_simulation *simulation);
 int				initialize_simulation(t_simulation *simulation, int ac, char **av);
 void			free_simulation(t_simulation *simulation);
-void			exit_cleanly(t_simulation *simulation, int philosopher_count);
 void			*philosopher_routine(void *arg);
 int				take_forks(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork);
-int				eat(t_philosopher *philosopher);
+int				eat(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork);
 int				think_and_sleep(t_philosopher *philosopher);
 int				update_scheduler(t_philosopher *philosopher);
 int				check_philosopher_status(t_philosopher *philosopher);
-void			monitor_philosopher_cycle(t_philosopher *philosopher);
+int				monitor_philosopher_cycle(t_philosopher *philosopher);
 
 #endif // PHILO_H

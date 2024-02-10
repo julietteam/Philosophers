@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:34:09 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/08 16:35:53 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/09 17:22:34 by julietteand      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,17 +82,17 @@ void	initialize_simulation_data(t_simulation *simulation, int number_of_philosop
 
 	i = 0;
 	if (!simulation || !simulation->philosophers || !simulation->forks)
-		exit(EXIT_FAILURE);
+		return ;
 	if (!initialize_mutexes(simulation))
-		exit(EXIT_FAILURE);
+		return ;
 	while (i < number_of_philosophers)
 	{
 		if (!initialize_philosopher(simulation, i))
-			exit(EXIT_FAILURE);
+			return ;
 		i++;
 	}
 	simulation->full_philosophers = 0;
-	simulation->is_running = 1;
+	simulation->stop = 0;
 
 }
 
