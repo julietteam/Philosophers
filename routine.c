@@ -6,7 +6,7 @@
 /*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:17:50 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/11 19:15:16 by julietteand      ###   ########.fr       */
+/*   Updated: 2024/02/11 20:09:51 by julietteand      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	eat(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t
 	remaining = philosopher->params.time_to_eat;
 	philosopher->last_meal_time = start_time;
 	stop = philosopher->simulation->stop;
-	//pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	if (stop)
 	{
 		pthread_mutex_unlock(first_fork);
@@ -73,11 +73,15 @@ int	eat(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t
 		remaining = philosopher->params.time_to_eat - elapsed;
 	}
 	philosopher->meals_eaten++;
+	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+	stop = philosopher->simulation->stop;
+	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	if (stop)
 	{
+		pthread_mutex_unlock(first_fork);
+		pthread_mutex_unlock(second_fork);
 		return (-1);
 	}
-	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	return(0);
 }
 
@@ -98,7 +102,7 @@ int	think_and_sleep(t_philosopher *philosopher)
 	}
 	if (display_log(philosopher->simulation, philosopher->id, "is sleeping", philosopher) == -1)
 		return (-1);
-	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+	//pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 	start_time = current_timestamp_in_ms();
 	remaining = philosopher->params.time_to_sleep;
 	while (remaining > 0)
@@ -115,7 +119,7 @@ int	think_and_sleep(t_philosopher *philosopher)
 		return (-1);
 	if (display_log(philosopher->simulation, philosopher->id, "is thinking", philosopher) == -1)
 		return (-1);
-	usleep(100);
+	usleep(1000);
 	return (0);
 }
 
