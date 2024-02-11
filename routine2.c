@@ -6,7 +6,7 @@
 /*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 14:30:40 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/10 22:11:42 by julietteand      ###   ########.fr       */
+/*   Updated: 2024/02/11 18:45:05 by julietteand      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,22 +51,33 @@ int handle_single_philosopher(t_philosopher *philosopher)
 
 int	philosopher_actions(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 {
-	if (take_forks(philosopher, first_fork, second_fork) == -1)
+	int	stop;
+	
+	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
+	stop = philosopher->simulation->stop;
+	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	if (!stop)
 	{
-		//printf("Philo %d a la sortie de take forks\n", philosopher->id);
-		return (-1);
-	}
-	if (philosopher->full != 1)
-	{ 
-		if (eat(philosopher, first_fork, second_fork) == -1)
+		//printf("status de stop: %d\n", philosopher->simulation->stop);
+		//printf("status de dead: %d\n", philosopher->is_dead);
+		if (take_forks(philosopher, first_fork, second_fork) == -1)
 		{
-			//printf("Philo %d a arrêté de manger\n", philosopher->id);
+			//printf("Philo %d a la sortie de take forks\n", philosopher->id);
 			return (-1);
 		}
-		if (update_scheduler(philosopher) == -1)
-		{
-			//printf("Philo %d a la sortie de update\n", philosopher->id);
-			return (-1);
+		if (philosopher->full != 1)
+		{ 
+			if (eat(philosopher, first_fork, second_fork) == -1)
+			{
+				//printf("Philo %d a arrêté de manger\n", philosopher->id);
+				return (-1);
+			}
+			pthread_mutex_unlock(first_fork);
+			if (update_scheduler(philosopher) == -1)
+			{
+				//printf("Philo %d a la sortie de update\n", philosopher->id);
+				return (-1);
+			}
 		}
 	}
 	//printf("Philo %d avant unlock first fork\n", philosopher->id);
@@ -89,6 +100,8 @@ int	philosopher_life_cycle(t_philosopher *philosopher, pthread_mutex_t *first_fo
 	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	while (!dead && !stop)
 	{
+		//printf("status de stop: %d\n", philosopher->simulation->stop);
+		//printf("status de dead: %d\n", philosopher->is_dead);
 		//printf("Philo %d au début de la boucle\n", philosopher->id);
 		if (philosopher_actions(philosopher, first_fork, second_fork) == -1)
 		{
@@ -135,7 +148,7 @@ void	*philosopher_routine(void *arg)
 			break ;
 		}
 	}
-	if (stop || philosopher->is_dead)
+	if (stop)
 	{
 		return (NULL);
 	}
