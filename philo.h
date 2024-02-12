@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
+/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:27:45 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/10 19:49:14 by julietteand      ###   ########.fr       */
+/*   Updated: 2024/02/12 14:38:42 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,10 @@ typedef struct s_simulation
 	t_params		*params;
 	t_philosopher	*philosophers;
 	t_fork			*forks;
-	pthread_mutex_t	scheduler_mutex; // Mutex pour l'ordonnanceur
+	pthread_mutex_t	scheduler_mutex;
 	pthread_mutex_t	death;
 	pthread_mutex_t	write;
-	int				current_philosopher_id;
-	//int				is_running;
 	int				stop;
-	int				total_meals_eaten;
 	int				full_philosophers;
 	long long		start_time;
 	int				count;

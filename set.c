@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
+/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:34:09 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/09 17:22:34 by julietteand      ###   ########.fr       */
+/*   Updated: 2024/02/12 18:31:03 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,22 @@ int	initialize_philosopher(t_simulation *simulation, int i)
 	simulation->philosophers[i].params = *(simulation->params);
 	simulation->philosophers[i].simulation = simulation;
 	simulation->philosophers[i].full = 0;
+	// if (simulation->params->number_of_philosophers == 1)
+	// {
+		
+	// 	simulation->philosophers[i].left_fork = &simulation->forks[i];
+	// 	simulation->philosophers[i].right_fork = NULL;
+	// }
+	// else if (simulation->philosophers[i].id == 1)
+	// {
+	// 	simulation->philosophers[i].left_fork = &simulation->forks[i];
+	// 	simulation->philosophers[i].right_fork = &simulation->forks[simulation->params->number_of_philosophers];
+	// }
+	// else
+	// {
+	// 	simulation->philosophers[i].left_fork = &simulation->forks[i + 1];	
+	// 	simulation->philosophers[i].right_fork = &simulation->forks[i  % simulation->params->number_of_philosophers]; //% simulation->params->number_of_philosophers
+	// }
 	simulation->philosophers[i].left_fork = &simulation->forks[i];
 	if (simulation->params->number_of_philosophers == 1)
 		simulation->philosophers[i].right_fork = NULL;
