@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
+/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 12:31:46 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/09 22:20:34 by julietteand      ###   ########.fr       */
+/*   Updated: 2024/02/13 19:16:31 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,6 @@ int	join_philosopher_threads(t_simulation *simulation)
 int	finalize_simulation(t_simulation *simulation)
 {
 	free_simulation(simulation);
-	free(simulation->params);
+	//free(simulation->params);
 	return (0);
 }

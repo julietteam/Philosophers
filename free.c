@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
+/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 13:40:13 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/09 17:09:55 by julietteand      ###   ########.fr       */
+/*   Updated: 2024/02/13 19:07:25 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

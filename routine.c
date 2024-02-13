@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:17:50 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/12 19:01:28 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/13 18:08:26 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ int	take_forks(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_
 	pthread_mutex_unlock(&philosopher->simulation->death);
 	if (stop || dead)
 	{
-		//printf("statut dead: %d, statut stop: %d du Philo %d\n", philosopher->is_dead, philosopher->simulation->stop, philosopher->id);
 		pthread_mutex_unlock(first_fork);
 		return (-1);
 	}
@@ -42,7 +41,6 @@ int	take_forks(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_
 	pthread_mutex_unlock(&philosopher->simulation->death);
 	if (stop || dead)
 	{
-		//printf("statut dead: %d, statut stop: %d du Philo %d\n", philosopher->is_dead, philosopher->simulation->stop, philosopher->id);
 		pthread_mutex_unlock(first_fork);
 		return (-1);
 	}
@@ -95,14 +93,14 @@ int	eat(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t
 	remaining = philosopher->params.time_to_eat;
 	philosopher->last_meal_time = start_time;
 	stop = philosopher->simulation->stop;
-	//pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	if (stop)
 	{
 		pthread_mutex_unlock(first_fork);
 		pthread_mutex_unlock(second_fork);
 		return (-1);
 	}
-	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
+	//pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	if (display_log(philosopher->simulation, philosopher->id, "is eating", philosopher) == -1)
 		return (-1);
 	while (remaining > 0)

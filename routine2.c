@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 14:30:40 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/12 19:01:21 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/13 19:12:40 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,10 +79,23 @@ int	philosopher_actions(t_philosopher *philosopher, pthread_mutex_t *first_fork,
 
 int	philosopher_life_cycle(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork) 
 {
+	long long	start_delay;
 
-	
+	start_delay = philosopher->simulation->params->number_of_philosophers;
+
+	while (!start_delay)
+		usleep(100);
+	philosopher->simulation->start_time = current_timestamp_in_ms();
 	if (display_log(philosopher->simulation, philosopher->id, "is thinking", philosopher) == -1)
-			return (-1);
+		return (-1);
+
+	if ((philosopher->simulation->params->number_of_philosophers % 2 == 0 && philosopher->id % 2 != 0) 
+	|| (philosopher->simulation->params->number_of_philosophers % 2 != 0 && philosopher->id % 2 == 0))
+	{
+		usleep(philosopher->simulation->params->time_to_eat * 100 / 2);
+	}
+	// if (display_log(philosopher->simulation, philosopher->id, "is thinking", philosopher) == -1)
+	//  		return (-1);
 	pthread_mutex_lock(&philosopher->simulation->death);
 	bool dead = philosopher->is_dead;
 	pthread_mutex_unlock(&philosopher->simulation->death);

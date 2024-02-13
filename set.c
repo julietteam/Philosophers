@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:34:09 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/12 18:31:03 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/13 18:37:32 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ int	allocate_simulation_resources(t_simulation *simulation, int number_of_philos
 	if (!simulation->forks)
 	{
 		printf("Échec de l'allocation pour les fourchettes.\n");
-		free(simulation->forks);
 		simulation->forks = NULL;
 		return (0);
 	}
@@ -63,30 +62,17 @@ int	initialize_philosopher(t_simulation *simulation, int i)
 	simulation->philosophers[i].params = *(simulation->params);
 	simulation->philosophers[i].simulation = simulation;
 	simulation->philosophers[i].full = 0;
-	// if (simulation->params->number_of_philosophers == 1)
-	// {
-		
-	// 	simulation->philosophers[i].left_fork = &simulation->forks[i];
-	// 	simulation->philosophers[i].right_fork = NULL;
-	// }
-	// else if (simulation->philosophers[i].id == 1)
-	// {
-	// 	simulation->philosophers[i].left_fork = &simulation->forks[i];
-	// 	simulation->philosophers[i].right_fork = &simulation->forks[simulation->params->number_of_philosophers];
-	// }
-	// else
-	// {
-	// 	simulation->philosophers[i].left_fork = &simulation->forks[i + 1];	
-	// 	simulation->philosophers[i].right_fork = &simulation->forks[i  % simulation->params->number_of_philosophers]; //% simulation->params->number_of_philosophers
-	// }
 	simulation->philosophers[i].left_fork = &simulation->forks[i];
 	if (simulation->params->number_of_philosophers == 1)
+	{
 		simulation->philosophers[i].right_fork = NULL;
-	else 
+	}
+	else //if (simulation->params->number_of_philosophers % 2 == 0)
 		simulation->philosophers[i].right_fork = &simulation->forks[(i + 1) % simulation->params->number_of_philosophers];
+	// else 
+	// 	simulation->philosophers[i].right_fork = &simulation->forks[(i - 1) % simulation->params->number_of_philosophers];	
 	simulation->philosophers[i].monitor_launched = false;
 	simulation->philosophers[i].thread_launched = false;
-
 	if (pthread_mutex_init(&simulation->philosophers[i].mutex, NULL) != 0)
 		return (0);
 	return (1);

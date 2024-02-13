@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:27:45 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/12 14:38:42 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/13 18:04:36 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,6 @@ typedef struct s_simulation
 	int				stop;
 	int				full_philosophers;
 	long long		start_time;
-	int				count;
-	int				flag;
 }		t_simulation;
 
 
@@ -81,7 +79,7 @@ int				join_philosopher_threads(t_simulation *simulation);
 int				initialize_simulation(t_simulation *simulation, int ac, char **av);
 void			free_simulation(t_simulation *simulation);
 void			*philosopher_routine(void *arg);
-int				take_forks(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork);
+int				take_forks(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork); 
 int				eat(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork);
 int				think_and_sleep(t_philosopher *philosopher);
 int				update_scheduler(t_philosopher *philosopher);
