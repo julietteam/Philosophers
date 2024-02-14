@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 14:30:40 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/14 18:31:22 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/14 19:25:27 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ int	philosopher_life_cycle(t_philosopher *philosopher, pthread_mutex_t *first_fo
 	start_delay = philosopher->simulation->params->number_of_philosophers;
 	while (!start_delay)
 		usleep(100);
-	//philosopher->simulation->start_time = current_timestamp_in_ms();
 	if (display_log(philosopher->simulation, philosopher->id, "is thinking", philosopher) == -1)
 		return (-1);
 

@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:17:50 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/14 18:44:44 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/14 19:40:08 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,12 +141,6 @@ void	set_sync(int i, t_simulation *simulation)
 		else
 			simulation->philosophers[i].sync = 100;
 	}
-	else if (nb % 2 != 0 && i % 2 == 0)
-		simulation->philosophers[i].sync = 100;
-	else if (nb % 2 == 0)
-		simulation->philosophers[i].sync = 50;
-	else
-		simulation->philosophers[i].sync = 0;
 	set_sync_2(nb, i, simulation->philosophers);
 }
 
@@ -161,13 +155,6 @@ void	set_sync_2(int nb, int i, t_philosopher *philosopher)
 		else if (philosopher[i].simulation->params->time_to_eat * 3 >  philosopher[i].simulation->params->time_to_die && philosopher[i].simulation->params->time_to_sleep + philosopher[i].simulation->params->time_to_eat < philosopher[i].simulation->params->time_to_die)
 		{
 			(philosopher[i].sync += philosopher[i].simulation->params->time_to_die - philosopher[i].simulation->params->time_to_eat + philosopher[i].simulation->params->time_to_sleep);
-		}
-	}
-	else
-	{
-		if (philosopher[i].simulation->params->time_to_eat * 2 > philosopher[i].simulation->params->time_to_die && (philosopher[i].simulation->params->time_to_sleep + philosopher[i].simulation->params->time_to_eat) < philosopher[i].simulation->params->time_to_die)
-		{
-			philosopher[i].sync += philosopher[i].simulation->params->time_to_die - (philosopher[i].simulation->params->time_to_eat + philosopher[i].simulation->params->time_to_sleep);
 		}
 	}
 }
@@ -204,7 +191,6 @@ int	think_and_sleep(t_philosopher *philosopher)
 		return (-1);
 	if (display_log(philosopher->simulation, philosopher->id, "is thinking", philosopher) == -1)
 		return (-1);
-	usleep(50);
 	return (0);
 }
 
