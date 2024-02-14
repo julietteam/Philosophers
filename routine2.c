@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 14:30:40 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/13 19:12:40 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/14 18:31:22 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,10 +82,9 @@ int	philosopher_life_cycle(t_philosopher *philosopher, pthread_mutex_t *first_fo
 	long long	start_delay;
 
 	start_delay = philosopher->simulation->params->number_of_philosophers;
-
 	while (!start_delay)
 		usleep(100);
-	philosopher->simulation->start_time = current_timestamp_in_ms();
+	//philosopher->simulation->start_time = current_timestamp_in_ms();
 	if (display_log(philosopher->simulation, philosopher->id, "is thinking", philosopher) == -1)
 		return (-1);
 
@@ -94,8 +93,6 @@ int	philosopher_life_cycle(t_philosopher *philosopher, pthread_mutex_t *first_fo
 	{
 		usleep(philosopher->simulation->params->time_to_eat * 100 / 2);
 	}
-	// if (display_log(philosopher->simulation, philosopher->id, "is thinking", philosopher) == -1)
-	//  		return (-1);
 	pthread_mutex_lock(&philosopher->simulation->death);
 	bool dead = philosopher->is_dead;
 	pthread_mutex_unlock(&philosopher->simulation->death);
@@ -110,6 +107,9 @@ int	philosopher_life_cycle(t_philosopher *philosopher, pthread_mutex_t *first_fo
 			return (-1);
 		if (think_and_sleep(philosopher) == -1)
 			return (-1);
+		if ( philosopher->simulation->params->number_of_philosophers == 3)
+			wait_after_thinking(philosopher->sync);
+	
 	}
 	return (0);
 }

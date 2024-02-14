@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 13:40:13 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/13 19:07:25 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/14 17:43:35 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ void	free_forks(t_simulation *simulation)
 
 void	free_simulation(t_simulation *simulation)
 {
-	//printf("Libération des ressources de simulation.\n");
 	if (simulation)
 	{
 		destroy_philosopher_mutexes(simulation);

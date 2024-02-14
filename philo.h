@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:27:45 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/13 18:04:36 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/14 17:43:24 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,10 @@ typedef struct s_philosopher
 	bool				monitor_launched;
 	int					full;
 	int					id;
-	int					is_dead; // etat de vie du Philosophe : 1 si mort, 0 si vivant
+	int					is_dead;
 	long long			last_meal_time;
 	int					meals_eaten;
+	int					sync;
 	t_fork				*left_fork;
 	t_fork				*right_fork;
 	pthread_t			thread;
@@ -85,5 +86,8 @@ int				think_and_sleep(t_philosopher *philosopher);
 int				update_scheduler(t_philosopher *philosopher);
 int				check_philosopher_status(t_philosopher *philosopher);
 int				monitor_philosopher_cycle(t_philosopher *philosopher);
+void			set_sync(int i, t_simulation *simulation);
+void			set_sync_2(int nb, int i, t_philosopher *philosopher);
+void 			wait_after_thinking(long long delay);
 
 #endif // PHILO_H
