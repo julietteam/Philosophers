@@ -6,13 +6,12 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:04:36 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/12 16:34:34 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/15 17:30:22 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-// Fonction pour obtenir le timestamp actuel en millisecondes
 long long	current_timestamp_in_ms(void)
 {
 	struct timeval	te;
@@ -23,8 +22,8 @@ long long	current_timestamp_in_ms(void)
 	return (milliseconds);
 }
 
-// Fonction pour afficher les logs
-int	display_log(t_simulation *simulation, int philosopher_id, const char *action, t_philosopher *philosopher)
+int	display_log(t_simulation *simulation, int philosopher_id, \
+const char *action, t_philosopher *philosopher)
 {
 	pthread_mutex_lock(&philosopher->simulation->death);
 	if (philosopher->is_dead == 1)
@@ -32,7 +31,8 @@ int	display_log(t_simulation *simulation, int philosopher_id, const char *action
 		pthread_mutex_unlock(&philosopher->simulation->death);
 	}
 	pthread_mutex_lock(&philosopher->simulation->write);
-	printf("%lld %d %s\n", current_timestamp_in_ms() - simulation->start_time, philosopher_id, action);
+	printf("%lld %d %s\n", current_timestamp_in_ms() - \
+	simulation->start_time, philosopher_id, action);
 	pthread_mutex_unlock(&philosopher->simulation->write);
 	pthread_mutex_unlock(&philosopher->simulation->death);
 	return (0);

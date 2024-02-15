@@ -6,27 +6,28 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:34:09 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/14 17:41:38 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/15 17:29:34 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	allocate_simulation_resources(t_simulation *simulation, int number_of_philosophers)
+int	allocate_simulation_resources(t_simulation *simulation, \
+int number_of_philosophers)
 {
-
 	if (number_of_philosophers <= 0)
-		return (0); 
-	simulation->philosophers = malloc(sizeof(t_philosopher) * number_of_philosophers);
+		return (0);
+	simulation->philosophers = malloc(sizeof(t_philosopher) \
+	* number_of_philosophers);
 	if (!simulation->philosophers)
 	{
-		printf("Échec de l'allocation pour les philosophes.\n");
+		printf("Error allocation for simulation philosophers.\n");
 		return (0);
 	}
 	simulation->forks = malloc(sizeof(t_fork) * number_of_philosophers);
 	if (!simulation->forks)
 	{
-		printf("Échec de l'allocation pour les fourchettes.\n");
+		printf("Failed to allocate forks.\n");
 		simulation->forks = NULL;
 		return (0);
 	}
@@ -70,10 +71,10 @@ int	initialize_philosopher(t_simulation *simulation, int i)
 	else
 	{
 		simulation->philosophers[i].left_fork = &simulation->forks[i];
-		simulation->philosophers[i].right_fork = &simulation->forks[(i + 1) % simulation->params->number_of_philosophers];
+		simulation->philosophers[i].right_fork = &simulation->forks[(i + 1) \
+		% simulation->params->number_of_philosophers];
 	}
 	set_sync(i, simulation);
-
 	simulation->philosophers[i].monitor_launched = false;
 	simulation->philosophers[i].thread_launched = false;
 	if (pthread_mutex_init(&simulation->philosophers[i].mutex, NULL) != 0)
@@ -81,7 +82,8 @@ int	initialize_philosopher(t_simulation *simulation, int i)
 	return (1);
 }
 
-void	initialize_simulation_data(t_simulation *simulation, int number_of_philosophers)
+void	initialize_simulation_data(t_simulation *simulation, \
+int number_of_philosophers)
 {
 	int	i;
 
@@ -98,19 +100,16 @@ void	initialize_simulation_data(t_simulation *simulation, int number_of_philosop
 	}
 	simulation->full_philosophers = 0;
 	simulation->stop = 0;
-
 }
 
-
-t_simulation	*init_simulation(t_simulation *simulation, int number_of_philosophers)
+t_simulation	*init_simulation(t_simulation *simulation, \
+int number_of_philosophers)
 {
 	if (!allocate_simulation_resources(simulation, number_of_philosophers))
 	{
 		printf("Failed to allocate ressources for simulation\n");
-		free(simulation);
 		return (NULL);
 	}
 	initialize_simulation_data(simulation, number_of_philosophers);
 	return (simulation);
 }
-

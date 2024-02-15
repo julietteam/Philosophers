@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+         #
+#    By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/25 17:31:16 by juandrie          #+#    #+#              #
-#    Updated: 2024/02/11 18:50:12 by julietteand      ###   ########.fr        #
+#    Updated: 2024/02/15 17:22:23 by juandrie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,13 +26,16 @@ CFLAGS = -Wall -Wextra -Werror -g3
 
 # Liste de tous les fichiers source (.c) 
 SRC = main.c \
+		actions.c\
 		routine.c\
-		routine2.c\
 		set.c\
 		time.c\
 		init.c\
 		free.c\
 		threads.c\
+		utils.c\
+		synchro.c\
+		monitor.c\
 
 # Liste des fichiers objets (.o) générés à partir des fichiers source
 OBJ = $(SRC:.c=.o)
