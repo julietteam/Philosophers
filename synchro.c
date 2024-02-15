@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/15 14:35:47 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/15 17:23:01 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/15 18:46:38 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,8 @@ void	set_sync_2(int nb, int i, t_philosopher *philosopher)
 int	stop(t_philosopher *philosopher)
 {
 	int			stop;
-
+	
+	//printf("Checking if philosopher %d should stop at %lld\n", philosopher->id, current_timestamp_in_ms());
 	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 	stop = philosopher->simulation->stop;
 	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
