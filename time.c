@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:04:36 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/15 17:30:22 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/19 15:40:52 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ const char *action, t_philosopher *philosopher)
 	if (philosopher->is_dead == 1)
 	{
 		pthread_mutex_unlock(&philosopher->simulation->death);
+		return (-1);
 	}
 	pthread_mutex_lock(&philosopher->simulation->write);
 	printf("%lld %d %s\n", current_timestamp_in_ms() - \

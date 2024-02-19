@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:27:07 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/15 19:09:15 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/19 18:16:30 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,20 +68,13 @@ int	check_philosopher_status(t_philosopher *philosopher)
 {
 	long long	time_since_last_meal;
 	int			timed_out;
-	int			dead;
-	int			stop;
 
 	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 	time_since_last_meal = current_timestamp_in_ms() \
 	- philosopher->last_meal_time;
 	timed_out = time_since_last_meal > philosopher->params.time_to_die;
-	//printf("check philo: %d, timed out: %d\n", philosopher->id, timed_out);
-	stop = philosopher->simulation->stop;
 	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-	pthread_mutex_lock(&philosopher->simulation->death);
-	dead = philosopher->is_dead;
-	pthread_mutex_unlock(&philosopher->simulation->death);
-	if (timed_out && !dead && !stop)
+	if (timed_out && !dead(philosopher) && !stop(philosopher))
 	{
 		is_dead(philosopher);
 		status_simulation(philosopher);

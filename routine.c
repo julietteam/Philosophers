@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 14:30:40 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/15 17:26:56 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/19 18:08:50 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ int	handle_single_philosopher(t_philosopher *philosopher)
 {
 	if (philosopher->simulation->params->number_of_philosophers == 1)
 	{
+		if (stop(philosopher))
+			return (-1);
 		if (display_log(philosopher->simulation, \
 		philosopher->id, "has taken a fork", philosopher) == -1)
 			return (-1);
@@ -52,17 +54,9 @@ int	handle_single_philosopher(t_philosopher *philosopher)
 int	philosopher_actions(t_philosopher *philosopher, \
 pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 {
-	int	stop;
-	int	dead;
-
-	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
-	stop = philosopher->simulation->stop;
-	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-	pthread_mutex_lock(&philosopher->simulation->death);
-	dead = philosopher->is_dead;
-	pthread_mutex_unlock(&philosopher->simulation->death);
-	if (!stop || !dead)
+	if (!stop(philosopher) || !dead(philosopher))
 	{
+
 		if (take_forks(philosopher, first_fork, second_fork) == -1)
 			return (-1);
 		if (philosopher->full != 1)
@@ -81,18 +75,9 @@ pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 int	philosopher_life_cycle(t_philosopher *philosopher, \
 pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 {
-	int			dead;
-	int			stop;
-
 	if (before_departure(philosopher) == -1)
 		return (-1);
-	pthread_mutex_lock(&philosopher->simulation->death);
-	dead = philosopher->is_dead;
-	pthread_mutex_unlock(&philosopher->simulation->death);
-	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
-	stop = philosopher->simulation->stop;
-	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-	while (!dead || !stop)
+	while (!dead(philosopher) || !stop(philosopher))
 	{
 		if (philosopher_actions(philosopher, first_fork, second_fork) == -1)
 			return (-1);
@@ -101,7 +86,10 @@ pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 		if (think_and_sleep(philosopher) == -1)
 			return (-1);
 		if (philosopher->simulation->params->number_of_philosophers == 3)
-			wait_after_thinking(philosopher->sync);
+		{
+			if (wait_after_thinking(philosopher->sync, philosopher) == -1)
+				return (-1);
+		}
 	}
 	return (0);
 }
@@ -111,17 +99,9 @@ void	*philosopher_routine(void *arg)
 	t_philosopher		*philosopher;
 	pthread_mutex_t		*first_fork;
 	pthread_mutex_t		*second_fork;
-	int					dead;
-	int					stop;
 
 	philosopher = (t_philosopher *)arg;
-	pthread_mutex_lock(&philosopher->simulation->death);
-	dead = philosopher->is_dead;
-	pthread_mutex_unlock(&philosopher->simulation->death);
-	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
-	stop = philosopher->simulation->stop;
-	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-	while (!dead && !stop)
+	while (!dead(philosopher) && !stop(philosopher))
 	{
 		if (handle_single_philosopher(philosopher) == -1)
 			break ;

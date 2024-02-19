@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/15 14:35:47 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/15 18:46:38 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/19 18:04:46 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	before_departure(t_philosopher *philosopher)
 	return (0);
 }
 
-void	wait_after_thinking(long long delay)
+int	wait_after_thinking(long long delay, t_philosopher *philosopher)
 {
 	long long	time_now;
 
@@ -40,7 +40,10 @@ void	wait_after_thinking(long long delay)
 	while (current_timestamp_in_ms() - time_now < delay)
 	{
 		usleep(50);
+		if (stop(philosopher))
+			return (-1);
 	}
+	return (0);
 }
 
 void	set_sync(int i, t_simulation *simulation)
@@ -88,10 +91,19 @@ void	set_sync_2(int nb, int i, t_philosopher *philosopher)
 int	stop(t_philosopher *philosopher)
 {
 	int			stop;
-	
-	//printf("Checking if philosopher %d should stop at %lld\n", philosopher->id, current_timestamp_in_ms());
+
 	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 	stop = philosopher->simulation->stop;
 	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	return (stop);
+}
+
+int	dead(t_philosopher *philosopher)
+{
+	int	dead;
+
+	pthread_mutex_lock(&philosopher->simulation->death);
+	dead = philosopher->is_dead;
+	pthread_mutex_unlock(&philosopher->simulation->death);
+	return (dead);
 }

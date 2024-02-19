@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 12:31:46 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/15 17:20:52 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/19 17:10:49 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	join_philosopher_threads(t_simulation *simulation)
 	while (i < simulation->params->number_of_philosophers)
 	{
 		pthread_join(simulation->philosophers[i].thread, NULL);
-		pthread_join(simulation->philosophers[i].monitor_thread, NULL);
+		//pthread_join(simulation->philosophers[i].monitor_thread, NULL);
 		i++;
 	}
 	return (0);

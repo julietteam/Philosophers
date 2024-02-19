@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:27:45 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/15 17:37:57 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/19 18:16:42 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ typedef struct s_simulation
 	int				stop;
 	int				full_philosophers;
 	long long		start_time;
+	// struct s_philosopher	*philo;
 }		t_simulation;
 
 t_simulation	*init_simulation(t_simulation *simulation, int number_of_philosophers);
@@ -82,15 +83,18 @@ int				take_forks(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthre
 int				eat(t_philosopher *philosopher, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork);
 int				think_and_sleep(t_philosopher *philosopher);
 int				update_scheduler(t_philosopher *philosopher);
-int				check_philosopher_status(t_philosopher *philosopher);
+int				check_philosopher_status(t_philosopher *philosopher); 
 int				monitor_philosopher_cycle(t_philosopher *philosopher);
 void			set_sync(int i, t_simulation *simulation);
 void			set_sync_2(int nb, int i, t_philosopher *philosopher);
-void			wait_after_thinking(long long delay);
+int				wait_after_thinking(long long delay, t_philosopher *philosopher);
 int				ft_atoi(const char *nptr);
 int				ft_strlen(const char *str);
 int				before_departure(t_philosopher *philosopher);
-void			*monitor_philosopher(void *arg);
+// void			*monitor_philosopher(void *arg);
 int				stop(t_philosopher *philosopher);
+int				dead(t_philosopher *philosopher);
+void			status_simulation(t_philosopher *philosopher);
+
 
 #endif // PHILO_H

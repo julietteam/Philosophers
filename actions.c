@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:17:50 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/15 19:19:02 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/19 16:03:53 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	take_second_forks(t_philosopher *philosopher, \
 pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 {
 	pthread_mutex_lock(second_fork);
-	if (stop(philosopher))
+	if (stop(philosopher) || dead(philosopher))
 	{
 		pthread_mutex_unlock(first_fork);
 		pthread_mutex_unlock(second_fork);
@@ -29,7 +29,7 @@ pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 		pthread_mutex_unlock(first_fork);
 		return (-1);
 	}
-	if (stop(philosopher))
+	if (stop(philosopher) || dead(philosopher))
 	{
 		pthread_mutex_unlock(second_fork);
 		pthread_mutex_unlock(first_fork);
@@ -42,7 +42,7 @@ int	take_forks(t_philosopher *philosopher, \
 pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 {
 	pthread_mutex_lock(first_fork);
-	if (stop(philosopher))
+	if (stop(philosopher) || dead(philosopher))
 	{
 		pthread_mutex_unlock(first_fork);
 		return (-1);
@@ -53,7 +53,7 @@ pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 		pthread_mutex_unlock(first_fork);
 		return (-1);
 	}
-	if (stop(philosopher))
+	if (stop(philosopher) || dead(philosopher))
 	{
 		pthread_mutex_unlock(first_fork);
 		return (-1);
@@ -63,7 +63,7 @@ pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 	return (0);
 }
 
-void	remaining_to_eat(t_philosopher *philosopher)
+int	remaining_to_eat(t_philosopher *philosopher)
 {
 	long long	start_time;
 	long long	elapsed;
@@ -77,10 +77,13 @@ void	remaining_to_eat(t_philosopher *philosopher)
 	while (remaining > 0)
 	{
 		usleep(100);
+		pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 		elapsed = current_timestamp_in_ms() - start_time;
 		remaining = philosopher->params.time_to_eat - elapsed;
+		pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	}
 	philosopher->meals_eaten++;
+	return (0);
 }
 
 int	eat(t_philosopher *philosopher, \
@@ -95,7 +98,8 @@ pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 	if (display_log(philosopher->simulation, philosopher->id, "is eating", \
 	philosopher) == -1)
 		return (-1);
-	remaining_to_eat(philosopher);
+	if (remaining_to_eat(philosopher) == -1)
+		return (-1);
 	if (stop(philosopher))
 	{
 		pthread_mutex_unlock(first_fork);
@@ -111,7 +115,7 @@ int	think_and_sleep(t_philosopher *philosopher)
 	long long	elapsed;
 	long long	remaining;
 
-	if (stop(philosopher))
+	if (stop(philosopher) || dead(philosopher))
 		return (-1);
 	if (display_log(philosopher->simulation, philosopher->id, "is sleeping", \
 	philosopher) == -1)
@@ -123,10 +127,14 @@ int	think_and_sleep(t_philosopher *philosopher)
 	while (remaining > 0)
 	{
 		usleep(100);
+		if (stop(philosopher) || dead(philosopher))
+			return (-1);
+		pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
 		elapsed = current_timestamp_in_ms() - start_time;
 		remaining = philosopher->params.time_to_sleep - elapsed;
+		pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	}
-	if (stop(philosopher))
+	if (stop(philosopher) || dead(philosopher))
 		return (-1);
 	if (display_log(philosopher->simulation, philosopher->id, "is thinking", \
 	philosopher) == -1)
