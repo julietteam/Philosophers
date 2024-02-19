@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/15 15:09:48 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/19 18:30:44 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/19 23:53:35 by julietteand      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,38 +92,27 @@ void	creation_error(t_simulation *simulation, int philosopher_count)
 
 void	*global_monitor(void *arg)
 {
-	t_simulation	*philosopher;
+	t_simulation	*simulation;
 	int				i;
-	int				full_philo;
 
-	philosopher = (t_simulation *)arg;
-	while (!stop(philosopher))
+	simulation = (t_simulation *)arg;
+	while (!stop(simulation->philosophers))
 	{
 		i = 0;
-		full_philo = 0;
-		while (i < philosopher->params->number_of_philosophers && !stop(philosopher))
+		usleep(50);
+		while (i < simulation->params->number_of_philosophers && !stop(simulation->philosophers))
 		{
-			//usleep(50);
-			if (check_philosopher_status(&philosopher[i]) == -1)
+			if (check_philosopher_status(&simulation->philosophers[i]) == -1)
 			{
-				status_simulation(&philosopher);
-				pthread_mutex_lock(&philosopher->scheduler_mutex);
-				&philosopher->stop = 1;
-				pthread_mutex_unlock(&philosopher->scheduler_mutex);
 				break ;
 			}
-			if (&philosopher->full_philosophers)
-				full_philo++;
 			i++;
 		}
-		if (full_philo == &philosopher->params->number_of_philosophers)
-		{
-			status_simulation(&philosopher);
-			pthread_mutex_lock(&philosopher->scheduler_mutex);
-			&philosopher->stop = 1;
-			pthread_mutex_unlock(&philosopher->scheduler_mutex);
+		pthread_mutex_lock(&simulation->scheduler_mutex);
+ 		int full = simulation->full_philosophers;
+ 		pthread_mutex_unlock(&simulation->scheduler_mutex); 	
+		if (full)
 			break ;
-		}
 	}
 	return (NULL);
 }

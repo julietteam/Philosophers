@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: julietteandrieux <julietteandrieux@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:17:50 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/19 16:03:53 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/19 23:45:38 by julietteand      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
