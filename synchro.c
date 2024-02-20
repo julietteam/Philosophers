@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/15 14:35:47 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/19 18:04:46 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/20 17:48:59 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	before_departure(t_philosopher *philosopher)
 	philosopher) == -1)
 		return (-1);
 	if ((philosopher->simulation->params->number_of_philosophers % 2 == 0 \
-		&& philosopher->id % 2 != 0) 
+		&& philosopher->id % 2 != 0)
 		|| (philosopher->simulation->params->number_of_philosophers % 2 != 0 \
 		&& philosopher->id % 2 == 0))
 	{
@@ -96,14 +96,4 @@ int	stop(t_philosopher *philosopher)
 	stop = philosopher->simulation->stop;
 	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
 	return (stop);
-}
-
-int	dead(t_philosopher *philosopher)
-{
-	int	dead;
-
-	pthread_mutex_lock(&philosopher->simulation->death);
-	dead = philosopher->is_dead;
-	pthread_mutex_unlock(&philosopher->simulation->death);
-	return (dead);
 }

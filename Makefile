@@ -6,7 +6,7 @@
 #    By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/25 17:31:16 by juandrie          #+#    #+#              #
-#    Updated: 2024/02/15 17:45:11 by juandrie         ###   ########.fr        #
+#    Updated: 2024/02/20 17:41:08 by juandrie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ CFLAGS = -Wall -Wextra -Werror -g3
 
 # Liste de tous les fichiers source (.c) 
 SRC = main.c \
-		actions.c\
+		eat.c\
 		routine.c\
 		set.c\
 		time.c\
@@ -36,6 +36,8 @@ SRC = main.c \
 		utils.c\
 		synchro.c\
 		monitor.c\
+		forks.c\
+		sleep_think.c\
 
 # Liste des fichiers objets (.o) générés à partir des fichiers source
 OBJ = $(SRC:.c=.o)

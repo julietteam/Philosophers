@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:27:07 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/19 18:16:30 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/20 17:55:42 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,23 +64,12 @@ int	end(t_philosopher *philosopher)
 	return (0);
 }
 
-int	check_philosopher_status(t_philosopher *philosopher)
+int	dead(t_philosopher *philosopher)
 {
-	long long	time_since_last_meal;
-	int			timed_out;
+	int	dead;
 
-	pthread_mutex_lock(&philosopher->simulation->scheduler_mutex);
-	time_since_last_meal = current_timestamp_in_ms() \
-	- philosopher->last_meal_time;
-	timed_out = time_since_last_meal > philosopher->params.time_to_die;
-	pthread_mutex_unlock(&philosopher->simulation->scheduler_mutex);
-	if (timed_out && !dead(philosopher) && !stop(philosopher))
-	{
-		is_dead(philosopher);
-		status_simulation(philosopher);
-		return (-1);
-	}
-	if (end(philosopher) == -1)
-		return (-1);
-	return (0);
+	pthread_mutex_lock(&philosopher->simulation->death);
+	dead = philosopher->is_dead;
+	pthread_mutex_unlock(&philosopher->simulation->death);
+	return (dead);
 }

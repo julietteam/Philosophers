@@ -6,7 +6,7 @@
 /*   By: juandrie <juandrie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 14:30:40 by juandrie          #+#    #+#             */
-/*   Updated: 2024/02/19 18:08:50 by juandrie         ###   ########.fr       */
+/*   Updated: 2024/02/20 17:53:39 by juandrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,8 @@ int	handle_single_philosopher(t_philosopher *philosopher)
 int	philosopher_actions(t_philosopher *philosopher, \
 pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 {
-	if (!stop(philosopher) || !dead(philosopher))
+	if (!stop(philosopher))
 	{
-
 		if (take_forks(philosopher, first_fork, second_fork) == -1)
 			return (-1);
 		if (philosopher->full != 1)
@@ -77,13 +76,15 @@ pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 {
 	if (before_departure(philosopher) == -1)
 		return (-1);
-	while (!dead(philosopher) || !stop(philosopher))
+	while (!stop(philosopher))
 	{
 		if (philosopher_actions(philosopher, first_fork, second_fork) == -1)
 			return (-1);
 		if (philosopher->full == 1)
 			return (-1);
-		if (think_and_sleep(philosopher) == -1)
+		if (to_sleep(philosopher) == -1)
+			return (-1);
+		if (think(philosopher) == -1)
 			return (-1);
 		if (philosopher->simulation->params->number_of_philosophers == 3)
 		{
@@ -101,7 +102,7 @@ void	*philosopher_routine(void *arg)
 	pthread_mutex_t		*second_fork;
 
 	philosopher = (t_philosopher *)arg;
-	while (!dead(philosopher) && !stop(philosopher))
+	while (!stop(philosopher))
 	{
 		if (handle_single_philosopher(philosopher) == -1)
 			break ;
